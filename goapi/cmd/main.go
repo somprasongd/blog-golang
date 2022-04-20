@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"goapi/pkg/common/config"
 	"goapi/pkg/common/database"
@@ -8,6 +10,10 @@ import (
 	"goapi/pkg/middleware"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -23,6 +29,10 @@ func main() {
 	// เรียกก่อนเริ่มเปิด server เพราะถ้าเชื่อมต่อไม่ได้ให้จะได้ไม่ต้อง start server
 	database.ConnectDB()
 
+	var wait time.Duration
+	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+	flag.Parse()
+
 	// เปลี่ยนตรงนี้
 	r := mux.NewRouter()
 	// define route
@@ -30,8 +40,44 @@ func main() {
 
 	// starting server
 	port := config.Config.App.Port
+	srv := &http.Server{
+		Addr: fmt.Sprintf("0.0.0.0:%v", port),
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler:      handler, // Pass our instance of gorilla/mux in.
+	}
 	log.Printf("Starting server at port %v\n", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), handler))
+	// Run our server in a goroutine so that it doesn't block.
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	// Create channel to listen for signals.
+	signalChan := make(chan os.Signal, 1)
+	// Accept graceful shutdowns when quit via SIGINT (Ctrl+C) or SIGTERM
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// Block until receive signal.
+	sig := <-signalChan
+	log.Printf("%s signal caught", sig)
+
+	// Create a deadline to wait for.
+	ctx, cancel := context.WithTimeout(context.Background(), wait)
+	defer cancel()
+
+	// Add extra handling here to clean up resources, such as flushing logs and
+	// closing any database or Redis connections.
+
+	// Gracefully shutdown the server by waiting on existing requests (except websockets).
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Printf("server shutdown failed: %+v", err)
+	}
+	log.Print("server exited")
+	os.Exit(0)
 }
 
 func setupRouter(r *mux.Router) http.Handler {
