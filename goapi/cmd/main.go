@@ -28,10 +28,11 @@ func main() {
 
 func setupRouter(r *mux.Router) {
 	todo := r.PathPrefix("/api/todos").Subrouter()
-	todo.HandleFunc("", handlers.CreateTodo).Methods(http.MethodPost)
-	todo.HandleFunc("", handlers.ListTodo).Methods(http.MethodGet)
+	todoHandler := handlers.NewTodoHandler(database.DB)
+	todo.HandleFunc("", todoHandler.CreateTodo).Methods(http.MethodPost)
+	todo.HandleFunc("", todoHandler.ListTodo).Methods(http.MethodGet)
 	// สามารถใช้ร่วมกับ regx ได้
-	todo.HandleFunc("/{id:[0-9]+}", handlers.GetTodo).Methods(http.MethodGet)
-	todo.HandleFunc("/{id:[0-9]+}", handlers.UpdateTodoStatus).Methods(http.MethodPut)
-	todo.HandleFunc("/{id:[0-9]+}", handlers.DeleteTodo).Methods(http.MethodDelete)
+	todo.HandleFunc("/{id:[0-9]+}", todoHandler.GetTodo).Methods(http.MethodGet)
+	todo.HandleFunc("/{id:[0-9]+}", todoHandler.UpdateTodoStatus).Methods(http.MethodPut)
+	todo.HandleFunc("/{id:[0-9]+}", todoHandler.DeleteTodo).Methods(http.MethodDelete)
 }

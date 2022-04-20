@@ -3,7 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"goapi/pkg/common/database"
+
+	// "goapi/pkg/common/errs"
 	"goapi/pkg/common/validator"
 	"net/http"
 	"strconv"
@@ -18,7 +19,17 @@ type Todo struct {
 	Completed bool   `json:"isCompleted" gorm:"column:is_done"`
 }
 
-func CreateTodo(w http.ResponseWriter, r *http.Request) {
+type todoHandler struct {
+	db *gorm.DB
+}
+
+func NewTodoHandler(db *gorm.DB) *todoHandler {
+	return &todoHandler{
+		db: db,
+	}
+}
+
+func (h todoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	// step 1: แปลง JSON จาก request body เป็น Todo struct
 	var todo Todo
 
@@ -34,18 +45,16 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// step 3: insert
-	tx := database.DB.Create(&todo)
+	tx := h.db.Create(&todo)
 	if err := tx.Error; err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// step 4: response
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(todo)
+	sendJson(w, http.StatusCreated, todo)
 }
 
-func ListTodo(w http.ResponseWriter, r *http.Request) {
+func (h todoHandler) ListTodo(w http.ResponseWriter, r *http.Request) {
 	// เพิ่มอ่านค่าจาก query params
 	query := r.URL.Query()
 	wheres := map[string]interface{}{}
@@ -61,24 +70,23 @@ func ListTodo(w http.ResponseWriter, r *http.Request) {
 
 	todos := []Todo{}
 	// เพิ่ม .Where()
-	tx := database.DB.Where(wheres).Find(&todos)
+	tx := h.db.Where(wheres).Find(&todos)
 
 	if err := tx.Error; err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todos)
+	sendJson(w, http.StatusOK, todos)
 }
 
-func GetTodo(w http.ResponseWriter, r *http.Request) {
+func (h todoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 	// step 1: get id from path param
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 	// step 2: select where id
 	todo := Todo{}
-	tx := database.DB.First(&todo, id)
+	tx := h.db.First(&todo, id)
 	if err := tx.Error; err != nil {
 		// step 3: handle error not found
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -89,11 +97,10 @@ func GetTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// step 4: response
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todo)
+	sendJson(w, http.StatusOK, todo)
 }
 
-func UpdateTodoStatus(w http.ResponseWriter, r *http.Request) {
+func (h todoHandler) UpdateTodoStatus(w http.ResponseWriter, r *http.Request) {
 	// step 1: get id from path param
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -105,7 +112,7 @@ func UpdateTodoStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// step 3: update only is_done column
-	tx := database.DB.Model(Todo{ID: id}).Update("is_done", todo.Completed)
+	tx := h.db.Model(Todo{ID: id}).Update("is_done", todo.Completed)
 	if err := tx.Error; err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -119,12 +126,12 @@ func UpdateTodoStatus(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func DeleteTodo(w http.ResponseWriter, r *http.Request) {
+func (h todoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	// step 1: get id from path param
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 	// step 2: delete where id
-	tx := database.DB.Delete(&Todo{}, id)
+	tx := h.db.Delete(&Todo{}, id)
 	if err := tx.Error; err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -136,4 +143,10 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	// step 4: response
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func sendJson(w http.ResponseWriter, code int, data interface{}) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
 }
