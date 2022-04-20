@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"goapi/pkg/common/config"
 	"goapi/pkg/common/database"
+	"goapi/pkg/common/logger"
 	"goapi/pkg/handlers"
 	"goapi/pkg/middleware"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -48,11 +48,11 @@ func main() {
 		IdleTimeout:  time.Second * 60,
 		Handler:      handler, // Pass our instance of gorilla/mux in.
 	}
-	log.Printf("Starting server at port %v\n", port)
+	logger.Info(fmt.Sprintf("Starting server at port %v\n", port))
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			log.Println(err)
+			logger.Info(err.Error())
 		}
 	}()
 
@@ -63,7 +63,7 @@ func main() {
 
 	// Block until receive signal.
 	sig := <-signalChan
-	log.Printf("%s signal caught", sig)
+	logger.Info(fmt.Sprintf("%s signal caught", sig))
 
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), wait)
@@ -74,9 +74,9 @@ func main() {
 
 	// Gracefully shutdown the server by waiting on existing requests (except websockets).
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Printf("server shutdown failed: %+v", err)
+		logger.Info(fmt.Sprintf("server shutdown failed: %+v", err))
 	}
-	log.Print("server exited")
+	logger.Info("server exited")
 	os.Exit(0)
 }
 

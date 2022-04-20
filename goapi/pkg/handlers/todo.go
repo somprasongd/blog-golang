@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"goapi/pkg/common/errs"
+	"goapi/pkg/common/logger"
 	"goapi/pkg/common/validator"
 	"net/http"
 	"strconv"
@@ -47,6 +48,7 @@ func (h todoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	// step 3: insert
 	tx := h.db.Create(&todo)
 	if err := tx.Error; err != nil {
+		logger.Error(err.Error())
 		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
@@ -73,6 +75,7 @@ func (h todoHandler) ListTodo(w http.ResponseWriter, r *http.Request) {
 	tx := h.db.Where(wheres).Find(&todos)
 
 	if err := tx.Error; err != nil {
+		logger.Error(err.Error())
 		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
@@ -93,6 +96,7 @@ func (h todoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 			handleError(w, errs.NewNotFoundError("todo with given id not found"))
 			return
 		}
+		logger.Error(err.Error())
 		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
@@ -114,6 +118,7 @@ func (h todoHandler) UpdateTodoStatus(w http.ResponseWriter, r *http.Request) {
 	// step 3: update only is_done column
 	tx := h.db.Model(Todo{ID: id}).Update("is_done", todo.Completed)
 	if err := tx.Error; err != nil {
+		logger.Error(err.Error())
 		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
@@ -133,6 +138,7 @@ func (h todoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	// step 2: delete where id
 	tx := h.db.Delete(&Todo{}, id)
 	if err := tx.Error; err != nil {
+		logger.Error(err.Error())
 		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}

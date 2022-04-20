@@ -1,9 +1,10 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"goapi/pkg/common/config"
-	"log"
+	log "goapi/pkg/common/logger"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -28,8 +29,8 @@ func ConnectDB() {
 	})
 
 	if err != nil {
-		log.Fatal("Cannot open DB connection", err)
+		panic(errors.New("Cannot open DB connection: " + err.Error()))
 	}
 
-	log.Println("DB Connected")
+	log.Info("Database connected")
 }
