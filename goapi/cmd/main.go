@@ -3,6 +3,7 @@ package main
 import (
 	"goapi/pkg/common/database"
 	"goapi/pkg/handlers"
+	"goapi/pkg/middleware"
 	"log"
 	"net/http"
 
@@ -35,4 +36,6 @@ func setupRouter(r *mux.Router) {
 	todo.HandleFunc("/{id:[0-9]+}", todoHandler.GetTodo).Methods(http.MethodGet)
 	todo.HandleFunc("/{id:[0-9]+}", todoHandler.UpdateTodoStatus).Methods(http.MethodPut)
 	todo.HandleFunc("/{id:[0-9]+}", todoHandler.DeleteTodo).Methods(http.MethodDelete)
+
+	r.Use(middleware.Logging)
 }
