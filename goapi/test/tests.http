@@ -1,0 +1,6 @@
+@base_url=http://localhost:8080
+
+GET {{base_url}}/tests
+Accept: application/json
+
+// Accept: application/xml

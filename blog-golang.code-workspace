@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "goapi"
+		},
+		{
+			"path": "gobasic"
+		},
+		{
+			"path": "godb"
+		},
+		{
+			"path": "godb-gorm"
+		},
+		{
+			"path": "godb-sqlx"
+		},
+		{
+			"path": "gotest"
+		}
+	],
+	"settings": {}
+}
