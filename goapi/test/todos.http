@@ -1,5 +1,5 @@
 @base_url=http://localhost:8080
-@id=81
+@id=1
 
 ### create
 POST {{base_url}}/api/todos

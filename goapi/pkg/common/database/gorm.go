@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"goapi/pkg/common/config"
 	log "goapi/pkg/common/logger"
+	"goapi/pkg/handlers"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -33,4 +34,6 @@ func ConnectDB() {
 	}
 
 	log.Info("Database connected")
+
+	DB.AutoMigrate(&handlers.Todo{})
 }
