@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	// "goapi/pkg/common/errs"
+	"goapi/pkg/common/errs"
 	"goapi/pkg/common/validator"
 	"net/http"
 	"strconv"
@@ -35,19 +35,19 @@ func (h todoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&todo)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		handleError(w, errs.NewBadRequestError(err.Error()))
 		return
 	}
 	// step 2: validate
 	err = validator.ValidateStruct(todo)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		handleError(w, errs.NewBadRequestError(err.Error()))
 		return
 	}
 	// step 3: insert
 	tx := h.db.Create(&todo)
 	if err := tx.Error; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
 	// step 4: response
@@ -62,7 +62,7 @@ func (h todoHandler) ListTodo(w http.ResponseWriter, r *http.Request) {
 	if val, ok := query["completed"]; ok {
 		b1, err := strconv.ParseBool(val[0])
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			handleError(w, errs.NewBadRequestError(err.Error()))
 			return
 		}
 		wheres["is_done"] = b1
@@ -73,7 +73,7 @@ func (h todoHandler) ListTodo(w http.ResponseWriter, r *http.Request) {
 	tx := h.db.Where(wheres).Find(&todos)
 
 	if err := tx.Error; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
 
@@ -90,10 +90,10 @@ func (h todoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 	if err := tx.Error; err != nil {
 		// step 3: handle error not found
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			http.Error(w, "todo with given id not found", http.StatusNotFound)
+			handleError(w, errs.NewNotFoundError("todo with given id not found"))
 			return
 		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
 	// step 4: response
@@ -114,12 +114,12 @@ func (h todoHandler) UpdateTodoStatus(w http.ResponseWriter, r *http.Request) {
 	// step 3: update only is_done column
 	tx := h.db.Model(Todo{ID: id}).Update("is_done", todo.Completed)
 	if err := tx.Error; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
 	// step 4: handle not found error
 	if tx.RowsAffected == 0 {
-		http.Error(w, "todo with given id not found", http.StatusNotFound)
+		handleError(w, errs.NewNotFoundError("todo with given id not found"))
 		return
 	}
 	// step 5: response
@@ -133,12 +133,12 @@ func (h todoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	// step 2: delete where id
 	tx := h.db.Delete(&Todo{}, id)
 	if err := tx.Error; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, errs.NewUnexpectedError(err.Error()))
 		return
 	}
 	// step 3: handle not found error
 	if tx.RowsAffected <= 0 {
-		http.Error(w, "todo with given id not found", http.StatusNotFound)
+		handleError(w, errs.NewNotFoundError("todo with given id not found"))
 		return
 	}
 	// step 4: response
@@ -149,4 +149,17 @@ func sendJson(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)
+}
+
+func handleError(w http.ResponseWriter, err error) {
+	switch e := err.(type) {
+	case errs.AppError:
+		sendJson(w, e.Code, e)
+	case error:
+		appErr := errs.AppError{
+			Code:    http.StatusInternalServerError,
+			Message: e.Error(),
+		}
+		sendJson(w, appErr.Code, appErr)
+	}
 }
