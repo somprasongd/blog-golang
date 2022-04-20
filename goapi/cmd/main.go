@@ -1,8 +1,7 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"goapi/pkg/handlers"
 	"log"
 	"net/http"
 
@@ -17,19 +16,18 @@ func main() {
 	// เปลี่ยนตรงนี้
 	r := mux.NewRouter()
 	// define route
-	r.HandleFunc("/tests", handleTest)
-	// สามารถใช้ร่วมกับ regx ได้
-	r.HandleFunc("/tests/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		fmt.Fprint(w, vars["id"])
-	})
+	setupRouter(r)
 
 	// starting server
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
-func handleTest(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(query)
+func setupRouter(r *mux.Router) {
+	todo := r.PathPrefix("/api/todos").Subrouter()
+	todo.HandleFunc("", handlers.CreateTodo).Methods(http.MethodPost)
+	todo.HandleFunc("", handlers.ListTodo).Methods(http.MethodGet)
+	// สามารถใช้ร่วมกับ regx ได้
+	todo.HandleFunc("/{id:[0-9]+}", handlers.GetTodo).Methods(http.MethodGet)
+	todo.HandleFunc("/{id:[0-9]+}", handlers.UpdateTodoStatus).Methods(http.MethodPut)
+	todo.HandleFunc("/{id:[0-9]+}", handlers.DeleteTodo).Methods(http.MethodDelete)
 }
