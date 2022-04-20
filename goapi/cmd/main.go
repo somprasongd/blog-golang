@@ -1,19 +1,40 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"encoding/xml"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-func main() {
-	// define route
-	http.HandleFunc("/greet", greet)
-
-	// starting server
-	log.Fatal(http.ListenAndServe(":8080", nil))
+type Test struct {
+	Name string
 }
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello world")
+func main() {
+	// เปลี่ยนตรงนี้
+	r := mux.NewRouter()
+	// define route
+	r.HandleFunc("/tests", handleTest)
+
+	// starting server
+	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func handleTest(w http.ResponseWriter, r *http.Request) {
+	tests := []Test{
+		{Name: "Test 1"},
+		{Name: "Test 2"},
+		{Name: "Test 3"},
+	}
+
+	if r.Header.Get("Accept") == "application/xml" {
+		w.Header().Add("Content-Type", "application/xml")
+		xml.NewEncoder(w).Encode(tests)
+	} else {
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tests)
+	}
 }
