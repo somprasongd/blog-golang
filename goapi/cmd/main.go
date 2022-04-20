@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"goapi/pkg/common/config"
 	"goapi/pkg/common/database"
 	"goapi/pkg/handlers"
 	"goapi/pkg/middleware"
@@ -16,6 +18,8 @@ type Test struct {
 }
 
 func main() {
+	// load config
+	config.LoadConfig()
 	// เรียกก่อนเริ่มเปิด server เพราะถ้าเชื่อมต่อไม่ได้ให้จะได้ไม่ต้อง start server
 	database.ConnectDB()
 
@@ -25,7 +29,9 @@ func main() {
 	handler := setupRouter(r)
 
 	// starting server
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	port := config.Config.App.Port
+	log.Printf("Starting server at port %v\n", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), handler))
 }
 
 func setupRouter(r *mux.Router) http.Handler {
