@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type Test struct {
@@ -21,13 +22,13 @@ func main() {
 	// เปลี่ยนตรงนี้
 	r := mux.NewRouter()
 	// define route
-	setupRouter(r)
+	handler := setupRouter(r)
 
 	// starting server
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
-func setupRouter(r *mux.Router) {
+func setupRouter(r *mux.Router) http.Handler {
 	todo := r.PathPrefix("/api/todos").Subrouter()
 	todoHandler := handlers.NewTodoHandler(database.DB)
 	todo.HandleFunc("", todoHandler.CreateTodo).Methods(http.MethodPost)
@@ -38,4 +39,13 @@ func setupRouter(r *mux.Router) {
 	todo.HandleFunc("/{id:[0-9]+}", todoHandler.DeleteTodo).Methods(http.MethodDelete)
 
 	r.Use(middleware.Logging)
+
+	// Handling CORS Requests
+	c := cors.New(cors.Options{
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
+	})
+
+	handler := c.Handler(r)
+	return handler
 }
