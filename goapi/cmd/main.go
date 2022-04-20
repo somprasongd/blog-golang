@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"log"
 	"net/http"
 
@@ -24,17 +23,7 @@ func main() {
 }
 
 func handleTest(w http.ResponseWriter, r *http.Request) {
-	tests := []Test{
-		{Name: "Test 1"},
-		{Name: "Test 2"},
-		{Name: "Test 3"},
-	}
-
-	if r.Header.Get("Accept") == "application/xml" {
-		w.Header().Add("Content-Type", "application/xml")
-		xml.NewEncoder(w).Encode(tests)
-	} else {
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(tests)
-	}
+	query := r.URL.Query()
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(query)
 }

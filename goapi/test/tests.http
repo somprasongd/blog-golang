@@ -3,4 +3,9 @@
 GET {{base_url}}/tests
 Accept: application/json
 
-// Accept: application/xml
+###
+GET {{base_url}}/tests
+Accept: application/xml
+
+###
+GET {{base_url}}/tests?name=abc&completed=true
