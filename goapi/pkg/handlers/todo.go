@@ -9,9 +9,9 @@ import (
 )
 
 type Todo struct {
-	ID        uint   `json:"id"`
+	ID        int    `json:"id"`
 	Title     string `json:"text"`
-	Completed bool   `json:"isCompleted"`
+	Completed bool   `json:"completed" gorm:"column:is_done"`
 }
 
 func CreateTodo(w http.ResponseWriter, r *http.Request) {

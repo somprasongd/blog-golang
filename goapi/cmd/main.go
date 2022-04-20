@@ -1,6 +1,7 @@
 package main
 
 import (
+	"goapi/pkg/common/database"
 	"goapi/pkg/handlers"
 	"log"
 	"net/http"
@@ -13,6 +14,9 @@ type Test struct {
 }
 
 func main() {
+	// เรียกก่อนเริ่มเปิด server เพราะถ้าเชื่อมต่อไม่ได้ให้จะได้ไม่ต้อง start server
+	database.ConnectDB()
+
 	// เปลี่ยนตรงนี้
 	r := mux.NewRouter()
 	// define route
