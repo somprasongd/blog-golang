@@ -1,0 +1,4 @@
+make: Entering directory 'd:/workspaces/blog-code/blog-golang/goapi-hax'
+go run cmd/main.go
+make: Leaving directory 'd:/workspaces/blog-code/blog-golang/goapi-hax'
+ 
