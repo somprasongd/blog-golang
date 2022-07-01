@@ -1,7 +1,7 @@
 package database
 
 import (
-	"goapi-hex/pkg/model"
+	"goapi-hex/pkg/core/model"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

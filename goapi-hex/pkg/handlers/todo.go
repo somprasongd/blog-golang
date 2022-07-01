@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"goapi-hex/pkg/dto"
-	"goapi-hex/pkg/ports"
+	"goapi-hex/pkg/common/errs"
+	"goapi-hex/pkg/core/dto"
+	"goapi-hex/pkg/core/ports"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,23 +17,23 @@ func NewTodoHandler(serv ports.TodoService) *TodoHandler {
 }
 
 func (h TodoHandler) CreateTodo(c *fiber.Ctx) error {
-	// bind json to struct
+	// แปลง JSON เป็น struct
 	todoForm := new(dto.NewTodoForm)
 	if err := c.BodyParser(todoForm); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
+			"error": err.Error(),
 		})
 
 	}
-
+	// ส่งต่อไปให้ service ทำงาน
 	todo, err := h.serv.Create(*todoForm)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+		// error จะถูกจัดการมาจาก service แล้ว
+		appErr := err.(errs.AppError)
+		return c.Status(appErr.Code).JSON(appErr)
 	}
 
-	// Return new todo in json format
+	// คืนค่า todo ที่เพิ่งบันทึกเสร็จกลับไปในรูปแบบ JSON
 	return c.JSON(todo)
 }
 

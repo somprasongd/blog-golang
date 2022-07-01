@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"goapi-hex/pkg/model"
-	"goapi-hex/pkg/ports"
+	"goapi-hex/pkg/core/model"
+	"goapi-hex/pkg/core/ports"
 
 	"gorm.io/gorm"
 )

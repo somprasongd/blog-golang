@@ -1,11 +1,11 @@
 package ports
 
 import (
-	"goapi-hex/pkg/dto"
-	"goapi-hex/pkg/model"
+	"goapi-hex/pkg/core/dto"
+	"goapi-hex/pkg/core/model"
 )
 
-// output port
+// interface สำหรับ output port
 type TodoRepository interface {
 	Create(t *model.Todo) error
 	// Find() ([]model.Todo, error)
@@ -14,7 +14,7 @@ type TodoRepository interface {
 	// DeleteById(id int) error
 }
 
-// input port
+// interface สำหรับ input port
 type TodoService interface {
 	Create(newTodo dto.NewTodoForm) (*dto.TodoResponse, error)
 	// List(completed string) ([]dto.TodoResponse, error)

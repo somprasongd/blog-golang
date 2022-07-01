@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jun 30 11:07:44 2022
+# Make data base, printed on Fri Jul 01 10:13:31 2022
 
 # Variables
 
@@ -23,9 +23,9 @@ USERPROFILE = C:\Users\sompr
 # environment
 LOCALAPPDATA = C:\Users\sompr\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-665eeb66-59d2-47f2-93d9-6d73b7b5b291-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-a816ef4d-18bb-4e01-bb4c-b74fee36f1db-sock
 # environment
-VSCODE_CWD = D:\workspaces\blog-code\blog-golang\goapi-hax
+VSCODE_CWD = C:\Program Files\Microsoft VS Code
 # environment
 CHOCOLATEYINSTALL = C:\ProgramData\chocolatey
 # environment
@@ -41,7 +41,7 @@ GOPATH = C:\Users\sompr\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_21540_AGEPXMJLDMPADZUP
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_20464_GVTACCZAUSTFGAVH
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
@@ -99,7 +99,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 21540
+VSCODE_PID = 20464
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -203,8 +203,7 @@ GOPROXY = https://proxy.golang.org,direct
 # default
 .RECIPEPREFIX := 
 # automatic
-<F = $(notdi 
-r $<)
+<F = $(notdir $<)
 # default
 SUFFIXES := 
 # environment
@@ -312,6 +311,6 @@ d.build:
 # strcache performance: lookups = 31 / hit rate = 32%
 # hash-table stats:
 # Load=21/8192=0%, Rehash=0, Collisions=0/31=0%
-# Finished Make data base on Thu Jun 30 11:07:44 2022
+# Finished Make data base on Fri Jul 01 10:13:31 2022
 
  

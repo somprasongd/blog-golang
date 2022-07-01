@@ -1,10 +1,10 @@
 package main
 
 import (
-	"goapi-hex/pkg/database"
+	"goapi-hex/pkg/common/database"
+	"goapi-hex/pkg/core/services"
 	"goapi-hex/pkg/handlers"
 	"goapi-hex/pkg/repository"
-	"goapi-hex/pkg/services"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,6 +18,7 @@ func main() {
 
 	app := fiber.New()
 
+	// สร้าง dependencies ทั้งหมด
 	repo := repository.NewTodoRepositoryDB(db)
 	serv := services.NewTodoService(repo)
 	h := handlers.NewTodoHandler(serv)
