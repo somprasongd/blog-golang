@@ -20,6 +20,7 @@ type Config struct {
 type appConfig struct {
 	BaseUrl string `env:"APP_BASEURL" validate:"required"`
 	Mode    string `env:"APP_MODE" validate:"required,oneof=development test production"`
+	Name    string `env:"APP_NAME"`
 	Version string `env:"APP_VERSION"`
 }
 

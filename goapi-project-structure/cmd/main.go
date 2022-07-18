@@ -19,7 +19,7 @@ func main() {
 
 	module.Init(app.Context)
 
-	err := app.Serve()
+	err := app.ServeHTTP()
 	if err != nil {
 		log.Fatalf("fiber.Listen failed %s", err)
 	}

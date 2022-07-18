@@ -41,7 +41,13 @@ func (a *app) CloseDB() {
 }
 
 func (a *app) InitRouter() {
-	r := fiber.New()
+	cfg := fiber.Config{
+		AppName:      fmt.Sprintf("%s v%s", a.Config.App.Name, a.Config.App.Version),
+		ReadTimeout:  a.Config.Server.TimeoutRead,
+		WriteTimeout: a.Config.Server.TimeoutWrite,
+		IdleTimeout:  a.Config.Server.TimeoutIdle,
+	}
+	r := fiber.New(cfg)
 	// Default middleware config
 	r.Use(cors.New())
 	r.Use(logger.New())
@@ -50,6 +56,6 @@ func (a *app) InitRouter() {
 	a.Router = r
 }
 
-func (a *app) Serve() error {
+func (a *app) ServeHTTP() error {
 	return a.Router.Listen(fmt.Sprintf(":%v", a.Config.Server.Port))
 }
