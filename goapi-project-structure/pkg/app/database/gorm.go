@@ -1,10 +1,11 @@
 package database
 
 import (
+	"fmt"
 	"goapi-project-structure/pkg/config"
-	"goapi-project-structure/pkg/module/todos/core/model"
+	"goapi-project-structure/pkg/module/todo/core/model"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -13,14 +14,14 @@ var DB *gorm.DB
 
 func New(conf *config.Config) (*gorm.DB, error) {
 	// Build a DSN e.g. postgres://username:password@host:port/dbName
-	// dsn := fmt.Sprintf("%v://%v:%v@%v:%v/%v?sslmode=%v",
-	// 	conf.Db.Driver,
-	// 	conf.Db.Username,
-	// 	conf.Db.Password,
-	// 	conf.Db.Host,
-	// 	conf.Db.Port,
-	// 	conf.Db.Database,
-	// 	conf.Db.Sslmode)
+	dsn := fmt.Sprintf("%v://%v:%v@%v:%v/%v?sslmode=%v",
+		conf.Db.Driver,
+		conf.Db.Username,
+		conf.Db.Password,
+		conf.Db.Host,
+		conf.Db.Port,
+		conf.Db.Database,
+		conf.Db.Sslmode)
 
 	gcnf := &gorm.Config{}
 
@@ -30,7 +31,7 @@ func New(conf *config.Config) (*gorm.DB, error) {
 		gcnf.Logger = logger.Default.LogMode(logger.Info)
 	}
 
-	db, err := gorm.Open(sqlite.Open(conf.Db.Database), gcnf)
+	db, err := gorm.Open(postgres.Open(dsn), gcnf)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +39,10 @@ func New(conf *config.Config) (*gorm.DB, error) {
 	return db, nil
 }
 
-func CloseDB(db *gorm.DB) {
-	sqlDB, _ := db.DB()
-	sqlDB.Close()
+func CloseDB(db *gorm.DB) error {
+	sqlDB, err := db.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.Close()
 }

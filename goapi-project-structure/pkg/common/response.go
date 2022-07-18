@@ -1,10 +1,7 @@
 package common
 
 import (
-	"goapi-project-structure/pkg/common/errs"
 	"net/http"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type Response struct {
@@ -14,25 +11,57 @@ type Response struct {
 	RequestId string                 `json:"requestId" example:"3b6272b9-1ef1-45e0"`
 }
 
-func ResponseCreated(c *fiber.Ctx, key string, body interface{}) error {
+type ResponseWithPage struct {
+	Status     int                    `json:"status" example:"200"`
+	Data       map[string]interface{} `json:"data,omitempty" example:"{data:{tasks}}"`
+	Error      interface{}            `json:"error,omitempty" example:"{}"`
+	Pagination interface{}            `json:"_pagination,omitempty" example:"{}"`
+	RequestId  string                 `json:"requestId" example:"3b6272b9-1ef1-45e0"`
+}
+
+func ResponseOk(c HContext, key string, body interface{}) error {
+	return c.SendJSON(http.StatusOK, Response{
+		Status:    http.StatusOK,
+		Data:      map[string]interface{}{key: body},
+		Error:     nil,
+		RequestId: c.RequestId(),
+	})
+}
+
+func ResponseCreated(c HContext, key string, body interface{}) error {
 	res := Response{
 		Status:    http.StatusCreated,
 		Data:      map[string]interface{}{key: body},
 		Error:     nil,
-		RequestId: c.GetRespHeader("X-Request-ID"),
+		RequestId: c.RequestId(),
 	}
 
-	c.Status(http.StatusCreated)
-	return c.JSON(res)
+	return c.SendJSON(http.StatusCreated, res)
 }
 
-func ResponseError(c *fiber.Ctx, err error) error {
-	var appErr errs.AppError
+func ResponseNoContent(c HContext) error {
+	return c.SendStatus(http.StatusNoContent)
+}
+
+func ResponsePage(c HContext, key string, body interface{}, page interface{}) error {
+	dataWithPage := ResponseWithPage{
+		Status:     http.StatusOK,
+		Data:       map[string]interface{}{key: body},
+		Error:      nil,
+		Pagination: page,
+		RequestId:  c.RequestId(),
+	}
+
+	return c.SendJSON(http.StatusOK, dataWithPage)
+}
+
+func ResponseError(c HContext, err error) error {
+	var appErr AppError
 	switch e := err.(type) {
-	case errs.AppError:
+	case AppError:
 		appErr = e
 	default: // case error
-		appErr = errs.AppError{
+		appErr = AppError{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}
@@ -41,8 +70,7 @@ func ResponseError(c *fiber.Ctx, err error) error {
 		Status:    appErr.Code,
 		Data:      nil,
 		Error:     appErr,
-		RequestId: c.GetRespHeader("X-Request-ID"),
+		RequestId: c.RequestId(),
 	}
-	c.Status(appErr.Code)
-	return c.JSON(res)
+	return c.SendJSON(appErr.Code, res)
 }

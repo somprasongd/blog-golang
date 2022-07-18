@@ -1,15 +1,16 @@
 package common
 
-type HandleFunc func(ctx HContext)
+type HandleFunc func(ctx HContext) error
 
 type HContext interface {
-	Bind(interface{}) error
-	BindQuery(interface{}) error
+	BodyParser(interface{}) error
+	QueryParser(interface{}) error
 	Query(string) (string, bool)
 	DefaultQuery(string, string) string
 	Param(string) string
 	Header(string) string
 	Authorization() string
 	RequestId() string
-	ResponseJSON(int, interface{})
+	SendStatus(int) error
+	SendJSON(int, interface{}) error
 }

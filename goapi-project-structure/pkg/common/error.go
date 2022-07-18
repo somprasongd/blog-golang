@@ -5,6 +5,23 @@ import (
 	"strings"
 )
 
+var (
+	// ErrIdFormat id format error
+	ErrIdFormat = NewNotFoundError("invalid id format")
+	// ErrRecordNotFound record not found error
+	ErrRecordNotFound = NewNotFoundError("record not found")
+	// ErrFromDatabase any error from database
+	ErrFromDatabase = NewUnexpectedError("error from database")
+	// ErrDbQuery error when select data from database
+	ErrDbQuery = NewUnexpectedError("database query error")
+	// ErrDbInsert error when insert data to database
+	ErrDbInsert = NewUnexpectedError("database insert error")
+	// ErrDbUpdate error when update data tp database
+	ErrDbUpdate = NewUnexpectedError("database update error")
+	// ErrDbDelete error when delete data from database
+	ErrDbDelete = NewUnexpectedError("database delete error")
+)
+
 type AppError struct {
 	Code    int           `json:"code" example:"400"`
 	Message string        `json:"message" example:"Invalid json body"`

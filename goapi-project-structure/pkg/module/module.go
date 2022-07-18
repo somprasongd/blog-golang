@@ -2,14 +2,14 @@ package module
 
 import (
 	"goapi-project-structure/pkg/app"
-	"goapi-project-structure/pkg/module/todos"
+	"goapi-project-structure/pkg/module/todo"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func Init(ctx *app.Context) {
-	todos.Init(ctx)
+	todo.Init(ctx)
 
 	ctx.Router.Get("/healthz", healthCheckHandler)
 }

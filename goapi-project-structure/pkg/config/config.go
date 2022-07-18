@@ -11,17 +11,29 @@ import (
 )
 
 type Config struct {
-	App     appConfig   `validate:"dive"`
-	Db      dbConfig    `validate:"dive"`
-	Server  serverConf  `validate:"dive"`
-	Gateway gatewayConf `validate:"dive"`
+	App    appConfig  `validate:"dive"`
+	Db     dbConfig   `validate:"dive"`
+	Server serverConf `validate:"dive"`
 }
 
 type appConfig struct {
-	BaseUrl string `env:"APP_BASEURL" validate:"required"`
-	Mode    string `env:"APP_MODE" validate:"required,oneof=development test production"`
-	Name    string `env:"APP_NAME"`
-	Version string `env:"APP_VERSION"`
+	BaseUrl      string `env:"APP_BASEURL" validate:"required"`
+	Mode         string `env:"APP_MODE" validate:"required,oneof=development test production"`
+	Name         string `env:"APP_NAME"`
+	Version      string `env:"APP_VERSION"`
+	LivenessFile string `env:"APP_LIVENESSFILE"`
+}
+
+func (c *appConfig) IsDevMode() bool {
+	return c.Mode == "development"
+}
+
+func (c *appConfig) IsTestMode() bool {
+	return c.Mode == "test"
+}
+
+func (c *appConfig) IsProdMode() bool {
+	return c.Mode == "production"
 }
 
 type dbConfig struct {
@@ -41,11 +53,6 @@ type serverConf struct {
 	TimeoutIdle  time.Duration `env:"SERVER_TIMEOUT_IDLE"`
 }
 
-type gatewayConf struct {
-	Host     string `env:"GATEWAY_HOST"`
-	BasePath string `env:"GATEWAY_BASEPATH"`
-}
-
 func LoadConfig() *Config {
 	viper.SetConfigName("config")                          // กำหนดชื่อไฟล์ config (without extension)
 	viper.SetConfigType("yaml")                            // ระบุประเภทของไฟล์ config
@@ -62,6 +69,7 @@ func LoadConfig() *Config {
 	viper.SetDefault("app.baseurl", "/api/v1")
 	viper.SetDefault("app.mode", "development")
 	viper.SetDefault("app.version", "1.0")
+	viper.SetDefault("app.livenessfile", "./tmp-live")
 
 	viper.SetDefault("server.port", 8080)
 	viper.SetDefault("server.timeout.read", "15s")
@@ -72,9 +80,11 @@ func LoadConfig() *Config {
 
 	config := &Config{
 		App: appConfig{
-			BaseUrl: viper.GetString("app.baseurl"),
-			Mode:    viper.GetString("app.mode"),
-			Version: viper.GetString("app.version"),
+			BaseUrl:      viper.GetString("app.baseurl"),
+			Mode:         viper.GetString("app.mode"),
+			Name:         viper.GetString("app.name"),
+			Version:      viper.GetString("app.version"),
+			LivenessFile: viper.GetString("app.livenessfile"),
 		},
 		Db: dbConfig{
 			Driver:   viper.GetString("db.driver"),
@@ -90,10 +100,6 @@ func LoadConfig() *Config {
 			TimeoutRead:  parseDuration(viper.GetString("server.timeout.read")),
 			TimeoutWrite: parseDuration(viper.GetString("server.timteout.write")),
 			TimeoutIdle:  parseDuration(viper.GetString("server.timeout.idle")),
-		},
-		Gateway: gatewayConf{
-			Host:     viper.GetString("gateway.host"),
-			BasePath: viper.GetString("gateway.basepath"),
 		},
 	}
 

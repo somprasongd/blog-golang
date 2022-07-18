@@ -16,11 +16,11 @@ func newFiberContext(c *fiber.Ctx) common.HContext {
 	}
 }
 
-func (c *fiberContext) Bind(v interface{}) error {
+func (c *fiberContext) BodyParser(v interface{}) error {
 	return c.Ctx.BodyParser(v)
 }
 
-func (c *fiberContext) BindQuery(v interface{}) error {
+func (c *fiberContext) QueryParser(v interface{}) error {
 	return c.Ctx.QueryParser(v)
 }
 
@@ -46,17 +46,20 @@ func (c *fiberContext) Authorization() string {
 }
 
 func (c *fiberContext) RequestId() string {
-	return c.Header("x-trace-id")
+	return c.GetRespHeader("X-Request-ID")
 }
 
-func (c *fiberContext) ResponseJSON(code int, data interface{}) {
-	c.Ctx.SendStatus(code)
-	c.Ctx.JSON(data)
+func (c *fiberContext) SendStatus(code int) error {
+	return c.Ctx.SendStatus(code)
+}
+
+func (c *fiberContext) SendJSON(code int, data interface{}) error {
+	c.Ctx.Status(code)
+	return c.Ctx.JSON(data)
 }
 
 func WrapFiberHandler(h common.HandleFunc) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		h(newFiberContext(c))
-		return nil
+		return h(newFiberContext(c))
 	}
 }
