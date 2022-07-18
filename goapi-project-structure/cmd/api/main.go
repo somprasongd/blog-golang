@@ -4,13 +4,11 @@ import (
 	"goapi-project-structure/pkg/app"
 	"goapi-project-structure/pkg/config"
 	"goapi-project-structure/pkg/module"
-	"log"
 )
 
 func main() {
 	// Load config
 	cfg := config.LoadConfig()
-	log.Println("Test TZ")
 
 	app := app.New(cfg)
 	// Cleanup when server stopped
