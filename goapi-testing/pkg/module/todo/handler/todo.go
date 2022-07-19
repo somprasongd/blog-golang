@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"goapi-project-structure/pkg/common"
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/ports"
+	"goapi-testing/pkg/common"
+	"goapi-testing/pkg/module/todo/core/dto"
+	"goapi-testing/pkg/module/todo/core/ports"
 )
 
 type TodoHandler struct {
