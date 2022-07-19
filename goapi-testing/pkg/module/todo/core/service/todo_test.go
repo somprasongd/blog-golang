@@ -2,12 +2,12 @@ package service_test
 
 import (
 	"errors"
-	"goapi-project-structure/pkg/common"
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/mapper"
-	"goapi-project-structure/pkg/module/todo/core/model"
-	"goapi-project-structure/pkg/module/todo/core/service"
-	"goapi-project-structure/pkg/module/todo/mocks"
+	"goapi-testing/pkg/common"
+	"goapi-testing/pkg/module/todo/core/dto"
+	"goapi-testing/pkg/module/todo/core/mapper"
+	"goapi-testing/pkg/module/todo/core/model"
+	"goapi-testing/pkg/module/todo/core/service"
+	"goapi-testing/pkg/module/todo/mocks"
 	"testing"
 
 	"github.com/gofrs/uuid"
@@ -167,4 +167,205 @@ func TestTodo(t *testing.T) {
 			assert.ErrorIs(t, err, common.ErrDbQuery)
 		})
 	})
+
+	t.Run("Get Todo Service", func(t *testing.T) {
+		t.Run("Success", func(t *testing.T) {
+			// Arrage
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+			mockTodo := &model.Todo{
+				ID:     uuid.FromStringOrNil(id),
+				Text:   "Todo 1",
+				Status: model.OPEN,
+			}
+
+			mockResp := mapper.TodoToDto(mockTodo)
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("FindById", id).Return(mockTodo, nil)
+
+			svc := service.NewTodoService(repo)
+
+			// Act
+			got, err := svc.Get(id, "")
+
+			// Assert
+			assert.NoError(t, err)
+			assert.Equal(t, got, mockResp)
+		})
+
+		t.Run("Not found", func(t *testing.T) {
+			// Arrage
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("FindById", id).Return(nil, common.ErrRecordNotFound)
+
+			svc := service.NewTodoService(repo)
+
+			var want *dto.TodoResponse
+			// Act
+			got, err := svc.Get(id, "")
+
+			// Assert
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, service.ErrTodoNotFoundById)
+			assert.Equal(t, want, got)
+		})
+
+		t.Run("Error", func(t *testing.T) {
+			// Arrage
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("FindById", id).Return(nil, errors.New("Some error down call chain"))
+
+			svc := service.NewTodoService(repo)
+
+			var want *dto.TodoResponse
+			// Act
+			got, err := svc.Get(id, "")
+
+			// Assert
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, common.ErrDbQuery)
+			assert.Equal(t, want, got)
+		})
+	})
+
+	t.Run("Update Todo Status Service", func(t *testing.T) {
+		t.Run("Success", func(t *testing.T) {
+			// Arrage
+			mockForm := dto.UpdateTodoForm{
+				Completed: true,
+			}
+
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			mockTodo := &model.Todo{
+				ID:     uuid.FromStringOrNil(id),
+				Text:   "Todo 1",
+				Status: model.DONE,
+			}
+
+			mockResp := mapper.TodoToDto(mockTodo)
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("UpdateStatusById", id, true).Return(mockTodo, nil)
+
+			svc := service.NewTodoService(repo)
+
+			// Act
+			got, err := svc.UpdateStatus(id, mockForm, "")
+
+			// Assert
+			assert.NoError(t, err)
+			assert.Equal(t, got, mockResp)
+		})
+
+		t.Run("Not found", func(t *testing.T) {
+			// Arrage
+			mockForm := dto.UpdateTodoForm{
+				Completed: true,
+			}
+
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("UpdateStatusById", id, true).Return(nil, common.ErrRecordNotFound)
+
+			svc := service.NewTodoService(repo)
+
+			var want *dto.TodoResponse
+			// Act
+			got, err := svc.UpdateStatus(id, mockForm, "")
+
+			// Assert
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, service.ErrTodoNotFoundById)
+			assert.Equal(t, want, got)
+		})
+
+		t.Run("Error", func(t *testing.T) {
+			// Arrage
+			mockForm := dto.UpdateTodoForm{
+				Completed: true,
+			}
+
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("UpdateStatusById", id, true).Return(nil, errors.New("Some error down call chain"))
+
+			svc := service.NewTodoService(repo)
+
+			var want *dto.TodoResponse
+			// Act
+			got, err := svc.UpdateStatus(id, mockForm, "")
+
+			// Assert
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, common.ErrDbUpdate)
+			assert.Equal(t, want, got)
+		})
+	})
+
+	t.Run("Delete Todo Service", func(t *testing.T) {
+		t.Run("Success", func(t *testing.T) {
+			// Arrage
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("DeleteById", id).Return(nil)
+
+			svc := service.NewTodoService(repo)
+
+			// Act
+			err := svc.Delete(id, "")
+
+			// Assert
+			assert.NoError(t, err)
+		})
+
+		t.Run("Not found", func(t *testing.T) {
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("DeleteById", id).Return(common.ErrRecordNotFound)
+
+			svc := service.NewTodoService(repo)
+
+			// Act
+			err := svc.Delete(id, "")
+
+			// Assert
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, service.ErrTodoNotFoundById)
+		})
+
+		t.Run("Error", func(t *testing.T) {
+			id := "7bce9463-37ce-4413-8f2f-31f3c643e1d5"
+
+			repo := mocks.NewTodoRepositoryMock()
+
+			repo.On("DeleteById", id).Return(errors.New("Some error down call chain"))
+
+			svc := service.NewTodoService(repo)
+
+			// Act
+			err := svc.Delete(id, "")
+
+			// Assert
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, common.ErrDbDelete)
+		})
+	})
+
 }

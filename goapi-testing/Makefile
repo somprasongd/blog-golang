@@ -33,3 +33,15 @@ prod-up:
 prod-down:
 	@echo "---Stop Prod $(SERVICE_NAME)---"
 	docker-compose -p task-api-prod -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.prod.yml down
+
+test-handler:
+	@echo "---Start test todo handler---"
+	go test -v goapi-testing/pkg/module/todo/handler
+
+test-service:
+	@echo "---Start test todo service---"
+	go test -v goapi-testing/pkg/module/todo/core/service
+
+test-all:
+	@echo "---Start test all module---"
+	go test -v goapi-testing/pkg/module/...

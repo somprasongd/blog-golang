@@ -4,9 +4,10 @@
 ### create
 POST {{host}}/api/v1/todos
 Content-Type: application/json
+X-Request-ID: ABC
 
 {
-  "text": "test 1"
+  "text": 1
 }
 
 ### list all

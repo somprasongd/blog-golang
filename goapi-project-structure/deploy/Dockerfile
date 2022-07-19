@@ -12,7 +12,6 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /app
 EXPOSE 8080
-# USER nonroot:nonroot
 ENV TZ=Asia/Bangkok
 ENV APP_MODE=production
 

@@ -6,6 +6,10 @@ import (
 )
 
 var (
+	// ErrBodyParser json format error
+	ErrBodyParser = NewBadRequestError("invalid json format")
+	// ErrQueryParser query string format error
+	ErrQueryParser = NewBadRequestError("invalid query string type")
 	// ErrIdFormat id format error
 	ErrIdFormat = NewNotFoundError("invalid id format")
 	// ErrRecordNotFound record not found error
@@ -20,6 +24,10 @@ var (
 	ErrDbUpdate = NewUnexpectedError("database update error")
 	// ErrDbDelete error when delete data from database
 	ErrDbDelete = NewUnexpectedError("database delete error")
+)
+
+const (
+	ErrMessageInvalidData = "invalid data see details"
 )
 
 type AppError struct {
@@ -51,7 +59,7 @@ func NewBadRequestError(message string) error {
 func NewInvalidError(details string) error {
 	return AppError{
 		Code:    http.StatusUnprocessableEntity,
-		Message: "invalid data see details",
+		Message: ErrMessageInvalidData,
 		Details: parseError(details),
 	}
 }

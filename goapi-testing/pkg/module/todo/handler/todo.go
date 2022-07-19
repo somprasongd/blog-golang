@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"goapi-project-structure/pkg/common"
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/ports"
+	"goapi-testing/pkg/common"
+	"goapi-testing/pkg/module/todo/core/dto"
+	"goapi-testing/pkg/module/todo/core/ports"
 )
 
 type TodoHandler struct {
@@ -18,7 +18,7 @@ func (h TodoHandler) CreateTodo(c common.HContext) error {
 	// แปลง JSON เป็น struct
 	form := new(dto.NewTodoForm)
 	if err := c.BodyParser(form); err != nil {
-		return common.ResponseError(c, common.NewBadRequestError(err.Error()))
+		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
 	todo, err := h.serv.Create(*form, c.RequestId())
@@ -34,7 +34,7 @@ func (h TodoHandler) CreateTodo(c common.HContext) error {
 func (h TodoHandler) ListTodo(c common.HContext) error {
 	filters := dto.ListTodoFilter{}
 	if err := c.QueryParser(&filters); err != nil {
-		return common.ResponseError(c, common.NewBadRequestError(err.Error()))
+		return common.ResponseError(c, common.ErrQueryParser)
 	}
 
 	page := common.Paginator(c)
