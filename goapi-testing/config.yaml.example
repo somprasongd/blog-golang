@@ -1,0 +1,14 @@
+app:
+  baseurl: '/api/v1'
+  mode: 'development'
+  version: '1.0'
+
+server:
+  port: 8080
+  timeout:
+    read: '15s'
+    write: '15s'
+    idle: '60s'
+
+db:
+  database: 'todos.db'
