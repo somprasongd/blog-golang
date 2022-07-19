@@ -11,7 +11,7 @@ var (
 	// ErrQueryParser query string format error
 	ErrQueryParser = NewBadRequestError("invalid query string type")
 	// ErrIdFormat id format error
-	ErrIdFormat = NewNotFoundError("invalid id format")
+	ErrIdFormat = NewBadRequestError("invalid id format")
 	// ErrRecordNotFound record not found error
 	ErrRecordNotFound = NewNotFoundError("record not found")
 	// ErrFromDatabase any error from database
