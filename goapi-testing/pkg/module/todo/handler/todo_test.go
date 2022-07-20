@@ -30,7 +30,7 @@ func TestTodoHandler(t *testing.T) {
 			}
 
 			expectedCode := http.StatusCreated
-			mockResp := common.Response{
+			expectedResp := common.Response{
 				Status: expectedCode,
 				Data: map[string]interface{}{
 					"todo": mockDto,
@@ -68,7 +68,7 @@ func TestTodoHandler(t *testing.T) {
 			//Assert
 			if assert.Equal(t, expectedCode, resp.StatusCode) {
 				body, _ := io.ReadAll(resp.Body)
-				expected, _ := json.Marshal(mockResp)
+				expected, _ := json.Marshal(expectedResp)
 				assert.JSONEq(t, string(expected), string(body))
 			}
 		})

@@ -12,6 +12,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestTodo(t *testing.T) {
@@ -61,17 +62,13 @@ func TestTodo(t *testing.T) {
 				Text: "Test new todo",
 			}
 
-			mockModel := mapper.CreateTodoFormToModel(mockForm)
-			mockResp := mapper.TodoToDto(mockModel)
-
 			repo := mocks.NewTodoRepositoryMock()
-			repo.On("Create", mockModel).Return(errors.New("Some error down call chain"))
+			repo.On("Create", mock.AnythingOfType("*model.Todo")).Return(errors.New("Some error down call chain"))
 
 			svc := service.NewTodoService(repo)
 
 			// Act
-			got, err := svc.Create(mockForm, "")
-			assert.NotEqual(t, mockResp, got)
+			_, err := svc.Create(mockForm, "")
 			assert.ErrorIs(t, err, common.ErrDbInsert)
 		})
 	})
