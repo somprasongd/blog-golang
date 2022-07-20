@@ -29,8 +29,8 @@ func Init(ctx *app.Context) {
 		basePath = ctx.Config.App.BaseUrl
 	}
 
-	docs.SwaggerInfo.Title = "Task Service API Document"
-	docs.SwaggerInfo.Description = "List of APIs for Task Service."
+	docs.SwaggerInfo.Title = "Todo Service API Document"
+	docs.SwaggerInfo.Description = "List of APIs for Todo Service."
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = host
 	docs.SwaggerInfo.BasePath = basePath
