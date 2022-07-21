@@ -49,11 +49,12 @@ func (a *app) InitDS() {
 	if err != nil {
 		panic(err)
 	}
+	// auto migrations
+	database.Migrate(db)
 	a.DB = db
 }
 
 func (a *app) Close() {
-	fmt.Println("close app")
 	// close database
 	if a.DB != nil {
 		database.CloseDB(a.DB)

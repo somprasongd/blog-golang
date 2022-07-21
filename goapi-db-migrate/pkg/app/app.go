@@ -15,13 +15,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"gorm.io/gorm"
 )
 
 type Context struct {
 	Config *config.Config
 	Router *fiber.App
-	DB     *gorm.DB
+	DB     *database.GormDB
 }
 
 type app struct {
@@ -45,25 +44,23 @@ func (a *app) CreateLivenessFile() {
 }
 
 func (a *app) InitDS() {
-	db, err := database.New(a.Config)
+	gorm, err := database.NewGormDB(a.Config)
 	if err != nil {
 		panic(err)
 	}
-	// auto migrations
-	database.Migrate(db)
-	a.DB = db
+	gorm.Migrate()
+	a.DB = gorm
 }
 
 func (a *app) Close() {
 	// close database
 	if a.DB != nil {
-		database.CloseDB(a.DB)
+		log.Info("Closing database")
+		a.DB.CloseDB()
 	}
 	// remove liveness file
-	err := os.Remove(a.Config.App.LivenessFile)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	log.Info("Removing liveness file")
+	os.Remove(a.Config.App.LivenessFile)
 }
 
 func (a *app) InitRouter() {
@@ -112,6 +109,6 @@ func (a *app) ServeHTTP() {
 	}
 
 	<-serverShutdown
-	log.Info("Running cleanup tasks...")
+	log.Info("Running cleanup tasks")
 	// Your cleanup tasks go here
 }

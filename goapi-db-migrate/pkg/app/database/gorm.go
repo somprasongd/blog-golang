@@ -10,9 +10,11 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
+type GormDB struct {
+	*gorm.DB
+}
 
-func New(conf *config.Config) (*gorm.DB, error) {
+func NewGormDB(conf *config.Config) (*GormDB, error) {
 	// Build a DSN e.g. postgres://username:password@host:port/dbName
 	dsn := fmt.Sprintf("%v://%v:%v@%v:%v/%v?sslmode=%v",
 		conf.Db.Driver,
@@ -35,16 +37,15 @@ func New(conf *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return db, nil
+	return &GormDB{db}, nil
 }
 
-func Migrate(db *gorm.DB) error {
-	return db.AutoMigrate(&model.Todo{})
+func (g *GormDB) Migrate() {
+	g.AutoMigrate(&model.Todo{})
 }
 
-func CloseDB(db *gorm.DB) error {
-	sqlDB, err := db.DB()
+func (g *GormDB) CloseDB() error {
+	sqlDB, err := g.DB.DB()
 	if err != nil {
 		return err
 	}

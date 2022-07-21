@@ -35,8 +35,12 @@ func New(conf *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(model.Todo{})
+
 	return db, nil
+}
+
+func Migrate(db *gorm.DB) error {
+	return db.AutoMigrate(&model.Todo{})
 }
 
 func CloseDB(db *gorm.DB) error {
