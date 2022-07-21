@@ -1,8 +1,8 @@
 package swagdto
 
 type ErrorDetail struct {
-	Target  string `json:"target" example:"text"`
-	Message string `json:"message" example:"text field is required"`
+	Target  string `json:"target" example:"name"`
+	Message string `json:"message" example:"name field is required"`
 }
 
 type ErrorData400 struct {

@@ -86,10 +86,10 @@ definitions:
   swagdto.ErrorDetail:
     properties:
       message:
-        example: text field is required
+        example: name field is required
         type: string
       target:
-        example: text
+        example: name
         type: string
     type: object
   swagdto.PagingResult:
@@ -140,6 +140,50 @@ definitions:
       text:
         description: 'Required: true'
         example: do something
+        type: string
+    type: object
+  swagger.ErrCreateSampleData:
+    properties:
+      code:
+        example: "422"
+        type: string
+      details:
+        items:
+          $ref: '#/definitions/swagger.ErrorDetailCreate'
+        type: array
+      message:
+        example: invalid data see details
+        type: string
+    type: object
+  swagger.ErrUpdateSampleData:
+    properties:
+      code:
+        example: "422"
+        type: string
+      details:
+        items:
+          $ref: '#/definitions/swagger.ErrorDetailUpdate'
+        type: array
+      message:
+        example: invalid data see details
+        type: string
+    type: object
+  swagger.ErrorDetailCreate:
+    properties:
+      message:
+        example: text field is required
+        type: string
+      target:
+        example: text
+        type: string
+    type: object
+  swagger.ErrorDetailUpdate:
+    properties:
+      message:
+        example: completed field is required
+        type: string
+      target:
+        example: completed
         type: string
     type: object
   swagger.TodoRepsonse:
@@ -213,10 +257,10 @@ paths:
                 data:
                   $ref: '#/definitions/swagger.TodoSampleListData'
               type: object
-        "422":
-          description: Unprocessable Entity
+        "400":
+          description: Bad Request
           schema:
-            $ref: '#/definitions/swagdto.Error422'
+            $ref: '#/definitions/swagdto.Error400'
         "500":
           description: Internal Server Error
           schema:
@@ -250,7 +294,12 @@ paths:
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/swagdto.Error422'
+            allOf:
+            - $ref: '#/definitions/swagdto.Error422'
+            - properties:
+                error:
+                  $ref: '#/definitions/swagger.ErrCreateSampleData'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -356,6 +405,15 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/swagdto.Error404'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            allOf:
+            - $ref: '#/definitions/swagdto.Error422'
+            - properties:
+                error:
+                  $ref: '#/definitions/swagger.ErrUpdateSampleData'
+              type: object
         "500":
           description: Internal Server Error
           schema:

@@ -80,10 +80,10 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "422": {
-                        "description": "Unprocessable Entity",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/swagdto.Error422"
+                            "$ref": "#/definitions/swagdto.Error400"
                         }
                     },
                     "500": {
@@ -139,7 +139,19 @@ const docTemplate = `{
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/swagdto.Error422"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrCreateSampleData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -309,6 +321,24 @@ const docTemplate = `{
                             "$ref": "#/definitions/swagdto.Error404"
                         }
                     },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrUpdateSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -447,11 +477,11 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string",
-                    "example": "text field is required"
+                    "example": "name field is required"
                 },
                 "target": {
                     "type": "string",
-                    "example": "text"
+                    "example": "name"
                 }
             }
         },
@@ -522,6 +552,70 @@ const docTemplate = `{
                     "description": "Required: true",
                     "type": "string",
                     "example": "do something"
+                }
+            }
+        },
+        "swagger.ErrCreateSampleData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "422"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.ErrorDetailCreate"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "invalid data see details"
+                }
+            }
+        },
+        "swagger.ErrUpdateSampleData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "422"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.ErrorDetailUpdate"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "invalid data see details"
+                }
+            }
+        },
+        "swagger.ErrorDetailCreate": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "text field is required"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "text"
+                }
+            }
+        },
+        "swagger.ErrorDetailUpdate": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "completed field is required"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "completed"
                 }
             }
         },

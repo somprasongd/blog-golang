@@ -20,7 +20,7 @@ func NewTodoHandler(serv ports.TodoService) *TodoHandler {
 // @Accept  json
 // @Produce  json
 // @Param todo body swagger.CreateTodoFrom true "Todo Data"
-// @Failure 422 {object} swagdto.Error422
+// @Failure 422 {object} swagdto.Error422{error=swagger.ErrCreateSampleData}
 // @Failure 500 {object} swagdto.Error500
 // @Success 201 {object} swagdto.Response{data=swagger.TodoSampleData}
 // @Router /todos [post]
@@ -51,7 +51,7 @@ func (h TodoHandler) CreateTodo(c common.HContext) error {
 // @Param page query int false "Go to a specific page number. Start with 1"
 // @Param limit query int false "Page size for the data"
 // @Param order query string false "Page order. Eg: text desc,createdAt desc"
-// @Failure 422 {object} swagdto.Error422
+// @Failure 400 {object} swagdto.Error400
 // @Failure 500 {object} swagdto.Error500
 // @Success 200 {object} swagdto.ResponseWithPage{data=swagger.TodoSampleListData}
 // @Router /todos [get]
@@ -102,6 +102,7 @@ func (h TodoHandler) GetTodo(c common.HContext) error {
 // @Param todo body swagger.UpdateTodoStatusForm true "Todo Status Data"
 // @Failure 400 {object} swagdto.Error400
 // @Failure 404 {object} swagdto.Error404
+// @Failure 422 {object} swagdto.Error422{error=swagger.ErrUpdateSampleData}
 // @Failure 500 {object} swagdto.Error500
 // @Success 200 {object} swagdto.Response{data=swagger.TodoSampleData}
 // @Router /todos/{id} [patch]
