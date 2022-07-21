@@ -1,4 +1,4 @@
-module goapi-doc
+module goapi
 
 go 1.18
 

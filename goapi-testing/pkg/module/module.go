@@ -1,8 +1,8 @@
 package module
 
 import (
-	"goapi-testing/pkg/app"
-	"goapi-testing/pkg/module/todo"
+	"goapi/pkg/app"
+	"goapi/pkg/module/todo"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"

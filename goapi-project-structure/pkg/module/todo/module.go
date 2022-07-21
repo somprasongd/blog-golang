@@ -1,11 +1,11 @@
 package todo
 
 import (
-	"goapi-project-structure/pkg/app"
-	"goapi-project-structure/pkg/module/todo/core/services"
-	"goapi-project-structure/pkg/module/todo/handler"
-	"goapi-project-structure/pkg/module/todo/repository"
-	"goapi-project-structure/pkg/util"
+	"goapi/pkg/app"
+	"goapi/pkg/module/todo/core/services"
+	"goapi/pkg/module/todo/handler"
+	"goapi/pkg/module/todo/repository"
+	"goapi/pkg/util"
 )
 
 func Init(ctx *app.Context) {

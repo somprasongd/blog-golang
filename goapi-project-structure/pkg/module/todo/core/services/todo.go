@@ -2,12 +2,12 @@ package services
 
 import (
 	"errors"
-	"goapi-project-structure/pkg/common"
-	"goapi-project-structure/pkg/common/logger"
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/mapper"
-	"goapi-project-structure/pkg/module/todo/core/model"
-	"goapi-project-structure/pkg/module/todo/core/ports"
+	"goapi/pkg/common"
+	"goapi/pkg/common/logger"
+	"goapi/pkg/module/todo/core/dto"
+	"goapi/pkg/module/todo/core/mapper"
+	"goapi/pkg/module/todo/core/model"
+	"goapi/pkg/module/todo/core/ports"
 )
 
 var (

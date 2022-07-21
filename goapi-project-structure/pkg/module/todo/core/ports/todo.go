@@ -1,9 +1,9 @@
 package ports
 
 import (
-	"goapi-project-structure/pkg/common"
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/model"
+	"goapi/pkg/common"
+	"goapi/pkg/module/todo/core/dto"
+	"goapi/pkg/module/todo/core/model"
 )
 
 // interface สำหรับ output port

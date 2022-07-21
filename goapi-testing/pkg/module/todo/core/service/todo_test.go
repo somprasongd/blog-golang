@@ -2,12 +2,12 @@ package service_test
 
 import (
 	"errors"
-	"goapi-testing/pkg/common"
-	"goapi-testing/pkg/module/todo/core/dto"
-	"goapi-testing/pkg/module/todo/core/mapper"
-	"goapi-testing/pkg/module/todo/core/model"
-	"goapi-testing/pkg/module/todo/core/service"
-	"goapi-testing/pkg/module/todo/mocks"
+	"goapi/pkg/common"
+	"goapi/pkg/module/todo/core/dto"
+	"goapi/pkg/module/todo/core/mapper"
+	"goapi/pkg/module/todo/core/model"
+	"goapi/pkg/module/todo/core/service"
+	"goapi/pkg/module/todo/mocks"
 	"testing"
 
 	"github.com/gofrs/uuid"

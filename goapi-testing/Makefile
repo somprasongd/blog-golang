@@ -36,12 +36,12 @@ prod-down:
 
 test-handler:
 	@echo "---Start test todo handler---"
-	go test -v goapi-testing/pkg/module/todo/handler
+	go test -v goapi/pkg/module/todo/handler
 
 test-service:
 	@echo "---Start test todo service---"
-	go test -v goapi-testing/pkg/module/todo/core/service
+	go test -v goapi/pkg/module/todo/core/service
 
 test-all:
 	@echo "---Start test all module---"
-	go test -v goapi-testing/pkg/module/...
+	go test -v goapi/pkg/module/...

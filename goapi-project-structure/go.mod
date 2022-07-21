@@ -1,4 +1,4 @@
-module goapi-project-structure
+module goapi
 
 go 1.18
 

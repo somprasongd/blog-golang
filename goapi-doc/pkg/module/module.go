@@ -2,9 +2,9 @@ package module
 
 import (
 	"fmt"
-	"goapi-doc/pkg/app"
-	"goapi-doc/pkg/docs"
-	"goapi-doc/pkg/module/todo"
+	"goapi/pkg/app"
+	"goapi/pkg/docs"
+	"goapi/pkg/module/todo"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"

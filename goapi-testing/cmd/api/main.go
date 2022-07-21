@@ -1,9 +1,9 @@
 package main
 
 import (
-	"goapi-testing/pkg/app"
-	"goapi-testing/pkg/config"
-	"goapi-testing/pkg/module"
+	"goapi/pkg/app"
+	"goapi/pkg/config"
+	"goapi/pkg/module"
 )
 
 func main() {

@@ -2,9 +2,9 @@ package app
 
 import (
 	"fmt"
-	"goapi-project-structure/pkg/app/database"
-	log "goapi-project-structure/pkg/common/logger"
-	"goapi-project-structure/pkg/config"
+	"goapi/pkg/app/database"
+	log "goapi/pkg/common/logger"
+	"goapi/pkg/config"
 	"net/http"
 	"os"
 	"os/signal"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"goapi-project-structure/pkg/app"
-	"goapi-project-structure/pkg/config"
-	"goapi-project-structure/pkg/module"
+	"goapi/pkg/app"
+	"goapi/pkg/config"
+	"goapi/pkg/module"
 )
 
 func main() {

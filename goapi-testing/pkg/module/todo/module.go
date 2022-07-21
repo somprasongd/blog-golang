@@ -1,12 +1,12 @@
 package todo
 
 import (
-	"goapi-testing/pkg/app"
-	"goapi-testing/pkg/module/todo/core/ports"
-	"goapi-testing/pkg/module/todo/core/service"
-	"goapi-testing/pkg/module/todo/handler"
-	"goapi-testing/pkg/module/todo/repository"
-	"goapi-testing/pkg/util"
+	"goapi/pkg/app"
+	"goapi/pkg/module/todo/core/ports"
+	"goapi/pkg/module/todo/core/service"
+	"goapi/pkg/module/todo/handler"
+	"goapi/pkg/module/todo/repository"
+	"goapi/pkg/util"
 
 	"github.com/gofiber/fiber/v2"
 )

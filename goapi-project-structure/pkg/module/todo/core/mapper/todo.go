@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/model"
+	"goapi/pkg/module/todo/core/dto"
+	"goapi/pkg/module/todo/core/model"
 )
 
 func CreateTodoFormToModel(dto dto.NewTodoForm) *model.Todo {

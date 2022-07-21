@@ -2,8 +2,8 @@ package database
 
 import (
 	"fmt"
-	"goapi-testing/pkg/config"
-	"goapi-testing/pkg/module/todo/core/model"
+	"goapi/pkg/config"
+	"goapi/pkg/module/todo/core/model"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

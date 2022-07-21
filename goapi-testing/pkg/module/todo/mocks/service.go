@@ -1,9 +1,9 @@
 package mocks
 
 import (
-	"goapi-testing/pkg/common"
-	"goapi-testing/pkg/module/todo/core/dto"
-	"goapi-testing/pkg/module/todo/core/ports"
+	"goapi/pkg/common"
+	"goapi/pkg/module/todo/core/dto"
+	"goapi/pkg/module/todo/core/ports"
 
 	"github.com/stretchr/testify/mock"
 )

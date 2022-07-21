@@ -2,10 +2,10 @@ package repository
 
 import (
 	"errors"
-	"goapi-project-structure/pkg/common"
-	"goapi-project-structure/pkg/module/todo/core/dto"
-	"goapi-project-structure/pkg/module/todo/core/model"
-	"goapi-project-structure/pkg/module/todo/core/ports"
+	"goapi/pkg/common"
+	"goapi/pkg/module/todo/core/dto"
+	"goapi/pkg/module/todo/core/model"
+	"goapi/pkg/module/todo/core/ports"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

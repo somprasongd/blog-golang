@@ -1,7 +1,7 @@
 package util
 
 import (
-	"goapi-project-structure/pkg/common"
+	"goapi/pkg/common"
 
 	"github.com/gofiber/fiber/v2"
 )
