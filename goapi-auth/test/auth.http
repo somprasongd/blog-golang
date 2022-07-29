@@ -1,0 +1,42 @@
+@host=http://localhost:8080
+
+@refreshToken=abc
+@accessToken=abc
+
+### register
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "user3@mail.com",
+  "password": "user3"
+}
+
+### login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user3@mail.com",
+  "password": "user3"
+}
+
+### profile
+POST {{host}}/api/v1/auth/profile
+Authorization: Bearer {{accessToken}}
+
+### Renew access token from refresh token
+POST {{host}}/api/v1/auth/refresh_token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Renew access token from refresh token
+POST {{host}}/api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}

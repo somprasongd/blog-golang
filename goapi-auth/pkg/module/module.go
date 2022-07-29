@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"goapi/pkg/app"
 	"goapi/pkg/docs"
+	"goapi/pkg/module/auth"
 	"goapi/pkg/module/users"
 	"net/http"
 
@@ -13,6 +14,7 @@ import (
 )
 
 func Init(ctx *app.Context) {
+	auth.Init(ctx)
 	users.Init(ctx)
 
 	ctx.Router.Get("/healthz", healthCheckHandler)

@@ -20,6 +20,9 @@ type ResponseWithPage struct {
 }
 
 func ResponseOk(c HContext, key string, body interface{}) error {
+	if body == nil {
+		return c.SendStatus(http.StatusOK)
+	}
 	return c.SendJSON(http.StatusOK, Response{
 		Status:    http.StatusOK,
 		Data:      map[string]interface{}{key: body},
@@ -29,6 +32,9 @@ func ResponseOk(c HContext, key string, body interface{}) error {
 }
 
 func ResponseCreated(c HContext, key string, body interface{}) error {
+	if body == nil {
+		return c.SendStatus(http.StatusCreated)
+	}
 	res := Response{
 		Status:    http.StatusCreated,
 		Data:      map[string]interface{}{key: body},
