@@ -16,6 +16,14 @@ func newFiberContext(c *fiber.Ctx) common.HContext {
 	}
 }
 
+func (c *fiberContext) Method() string {
+	return c.Ctx.Method()
+}
+
+func (c *fiberContext) Path() string {
+	return c.Ctx.Path()
+}
+
 func (c *fiberContext) BodyParser(v interface{}) error {
 	return c.Ctx.BodyParser(v)
 }

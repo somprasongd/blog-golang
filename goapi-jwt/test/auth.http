@@ -1,6 +1,6 @@
 @host=http://localhost:8080
 
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2NTk0MzU0ODUsInN1YiI6Ijk2YWUzNWM0LTE0Y2ItNDAzMy1iYTMwLTVkYTBmNjA2NjFiNCJ9.VumaO_pQjc4GQRvpj6XKMeMb3rWCOC7tmrIGkjoU1lQ
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2NTk0OTc5MDEsInN1YiI6IjViNDM3Y2NjLWNkZjUtNDZiZS1hOWNhLWU3NmY0NWY0NTEzYSJ9.tnyWPVzPUK-HhEmeI4p0BFNLy-YZUKoZB-OYxSts9iQ
 
 
 ### register
@@ -8,8 +8,8 @@ POST {{host}}/api/v1/auth/register
 Content-Type: application/json
 
 {
-  "email": "user12@mail.com",
-  "password": "user12"
+  "email": "user@mail.com",
+  "password": "user"
 }
 
 ### login
@@ -22,5 +22,5 @@ Content-Type: application/json
 }
 
 ### profile
-GET {{host}}/api/v1/auth/profile
+GET {{host}}/api/v1/auth/profile/123?q=1
 Authorization: Bearer {{token}}

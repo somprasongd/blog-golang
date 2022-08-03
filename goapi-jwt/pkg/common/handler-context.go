@@ -3,6 +3,8 @@ package common
 type HandleFunc func(ctx HContext) error
 
 type HContext interface {
+	Method() string
+	Path() string
 	BodyParser(interface{}) error
 	QueryParser(interface{}) error
 	Query(string) (string, bool)

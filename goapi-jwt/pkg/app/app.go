@@ -3,8 +3,10 @@ package app
 import (
 	"fmt"
 	"goapi/pkg/app/database"
+	"goapi/pkg/app/middleware"
 	log "goapi/pkg/common/logger"
 	"goapi/pkg/config"
+	"goapi/pkg/util"
 	"net/http"
 	"os"
 	"os/signal"
@@ -78,6 +80,13 @@ func (a *app) InitRouter() {
 		Format: "[${time}] ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
 	}))
 	r.Use(recover.New())
+
+	// authentication with exclude list
+	excludeList := map[string][]string{
+		"/api/v1/auth/register": {http.MethodPost},
+		"/api/v1/auth/login":    {http.MethodPost},
+	}
+	r.Use(util.WrapFiberHandler(middleware.Authentication(a.Config.Token.SecretKey, excludeList)))
 
 	a.Router = r
 }

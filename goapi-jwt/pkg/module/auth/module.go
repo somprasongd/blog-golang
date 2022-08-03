@@ -5,7 +5,6 @@ import (
 	"goapi/pkg/module/auth/core/ports"
 	"goapi/pkg/module/auth/core/service"
 	"goapi/pkg/module/auth/handler"
-	"goapi/pkg/module/auth/middleware"
 	"goapi/pkg/module/auth/repository"
 	"goapi/pkg/util"
 
@@ -42,6 +41,7 @@ func SetupRoutes(cfg RouteConfig) {
 	auth.Post("/register", util.WrapFiberHandler(h.Register))
 	auth.Post("/login", util.WrapFiberHandler(h.Login))
 
-	authentication := util.WrapFiberHandler(middleware.Authentication(cfg.TokenSecret))
-	auth.Get("/profile", authentication, util.WrapFiberHandler(h.Profile))
+	// authentication := util.WrapFiberHandler(middleware.Authentication(cfg.TokenSecret))
+	// auth.Get("/profile", authentication, util.WrapFiberHandler(h.Profile))
+	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
 }
