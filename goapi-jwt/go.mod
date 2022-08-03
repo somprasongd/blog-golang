@@ -18,6 +18,7 @@ require (
 	go.elastic.co/ecszap v1.0.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
+	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8
 )

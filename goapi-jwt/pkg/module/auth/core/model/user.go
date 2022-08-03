@@ -8,16 +8,13 @@ import (
 
 type User struct {
 	ID        uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Email     string    `gorm:"uniqueIndex"`
+	Email     string
 	Password  string
 	Role      UserRole `sql:"user_role" gorm:"default:'user'"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func (u *User) HashPassword() {
-
-}
 func (u *User) Promote() {
 	u.Role = ADMIN
 }
