@@ -9,15 +9,17 @@ import (
 
 type authClaims struct {
 	Email string `json:"email"`
-	jwt.StandardClaims
+	Role  string `json:"role"`
+	jwt.RegisteredClaims
 }
 
-func GenerateToken(uid string, email string, secretKey string) (string, error) {
+func GenerateToken(uid string, email string, role string, secretKey string) (string, error) {
 	claims := &authClaims{
 		email,
-		jwt.StandardClaims{
-			IssuedAt: time.Now().Unix(),
+		role,
+		jwt.RegisteredClaims{
 			Subject:  uid,
+			IssuedAt: jwt.NewNumericDate(time.Now()),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

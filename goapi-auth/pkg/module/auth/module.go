@@ -20,7 +20,7 @@ type RouteConfig struct {
 func Init(ctx *app.Context) {
 	// สร้าง dependencies ทั้งหมด
 	repo := repository.NewAuthRepositoryDB(ctx.DB.DB)
-	svc := service.NewAuthService(repo)
+	svc := service.NewAuthService(ctx.Config, repo)
 
 	cfg := RouteConfig{
 		BaseURL:     ctx.Config.App.BaseUrl,
@@ -38,7 +38,5 @@ func SetupRoutes(cfg RouteConfig) {
 
 	auth.Post("/register", util.WrapFiberHandler(h.Register))
 	auth.Post("/login", util.WrapFiberHandler(h.Login))
-	auth.Post("/logout", util.WrapFiberHandler(h.Logout))
-	auth.Post("/refresh", util.WrapFiberHandler(h.Refresh))
 	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
 }

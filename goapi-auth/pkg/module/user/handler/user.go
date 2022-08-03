@@ -2,8 +2,8 @@ package handler
 
 import (
 	"goapi/pkg/common"
-	"goapi/pkg/module/users/core/dto"
-	"goapi/pkg/module/users/core/ports"
+	"goapi/pkg/module/user/core/dto"
+	"goapi/pkg/module/user/core/ports"
 )
 
 type UserHandler struct {

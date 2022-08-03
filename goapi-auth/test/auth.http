@@ -1,15 +1,15 @@
 @host=http://localhost:8080
 
-@refreshToken=abc
-@accessToken=abc
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsInN1YiI6ImY4NjE5MzZjLTA2MmYtNGU0OS04MmE4LTA4ZjM5YWJlZGRhOSIsImlhdCI6MTY1OTUyMDU5MH0.NHT8oZXrrQOVXUCepiNCfajRKE3brkqamT3eUk2MawA
+
 
 ### register
 POST {{host}}/api/v1/auth/register
 Content-Type: application/json
 
 {
-  "email": "user12@mail.com",
-  "password": "user12"
+  "email": "user@mail.com",
+  "password": "user"
 }
 
 ### login
@@ -17,26 +17,10 @@ POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "user3@mail.com",
-  "password": "user3"
+  "email": "admin@mail.com",
+  "password": "admin"
 }
 
 ### profile
-POST {{host}}/api/v1/auth/profile
-Authorization: Bearer {{accessToken}}
-
-### Renew access token from refresh token
-POST {{host}}/api/v1/auth/refresh_token
-Content-Type: application/json
-
-{
-  "refreshToken": "{{refreshToken}}"
-}
-
-### Renew access token from refresh token
-POST {{host}}/api/v1/auth/logout
-Content-Type: application/json
-
-{
-  "refreshToken": "{{refreshToken}}"
-}
+GET {{host}}/api/v1/auth/profile
+Authorization: Bearer {{token}}

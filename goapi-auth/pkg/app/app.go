@@ -3,13 +3,16 @@ package app
 import (
 	"fmt"
 	"goapi/pkg/app/database"
+	"goapi/pkg/app/middleware"
 	log "goapi/pkg/common/logger"
 	"goapi/pkg/config"
+	"goapi/pkg/util"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/casbin/casbin/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -62,7 +65,7 @@ func (a *app) Close() {
 	os.Remove(a.Config.App.LivenessFile)
 }
 
-func (a *app) InitRouter() {
+func (a *app) InitRouter(enforcer *casbin.Enforcer) {
 	cfg := fiber.Config{
 		AppName:               fmt.Sprintf("%s v%s", a.Config.App.Name, a.Config.App.Version),
 		ReadTimeout:           a.Config.Server.TimeoutRead,
@@ -78,6 +81,16 @@ func (a *app) InitRouter() {
 		Format: "[${time}] ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
 	}))
 	r.Use(recover.New())
+
+	// authentication with exclude list
+	// excludeList := map[string][]string{
+	// 	"/api/v1/auth/register": {http.MethodPost},
+	// 	"/api/v1/auth/login":    {http.MethodPost},
+	// }
+	// r.Use(util.WrapFiberHandler(middleware.Authentication(a.Config.Token.SecretKey, excludeList)))
+	r.Use(util.WrapFiberHandler(middleware.AuthenticationCasbin(a.Config.Token.SecretKey, enforcer)))
+	// authorization with casbin
+	r.Use(util.WrapFiberHandler(middleware.Authorize(enforcer)))
 
 	a.Router = r
 }

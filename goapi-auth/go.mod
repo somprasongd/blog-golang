@@ -3,6 +3,7 @@ module goapi
 go 1.18
 
 require (
+	github.com/casbin/casbin/v2 v2.51.2
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.0
@@ -18,11 +19,13 @@ require (
 	go.elastic.co/ecszap v1.0.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
+	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8
 )
 
 require (
+	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect

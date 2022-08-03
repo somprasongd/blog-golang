@@ -5,7 +5,7 @@ import (
 	"goapi/pkg/app"
 	"goapi/pkg/docs"
 	"goapi/pkg/module/auth"
-	"goapi/pkg/module/users"
+	"goapi/pkg/module/user"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +15,7 @@ import (
 
 func Init(ctx *app.Context) {
 	auth.Init(ctx)
-	users.Init(ctx)
+	user.Init(ctx)
 
 	ctx.Router.Get("/healthz", healthCheckHandler)
 

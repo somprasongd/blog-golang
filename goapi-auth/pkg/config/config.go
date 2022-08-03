@@ -11,10 +11,11 @@ import (
 )
 
 type Config struct {
-	App     appConfig  `validate:"dive"`
-	Db      dbConfig   `validate:"dive"`
-	Server  serverConf `validate:"dive"`
-	Gateway gateway    `validate:"dive"`
+	App     appConfig     `validate:"dive"`
+	Db      dbConfig      `validate:"dive"`
+	Server  serverConfig  `validate:"dive"`
+	Gateway gatewayConfig `validate:"dive"`
+	Token   tokenConfig   `validate:"dive"`
 }
 
 type appConfig struct {
@@ -47,30 +48,48 @@ type dbConfig struct {
 	Sslmode  string `env:"DB_SSLMODE"`
 }
 
-type serverConf struct {
+type serverConfig struct {
 	Port         uint          `env:"SERVER_PORT"`
 	TimeoutRead  time.Duration `env:"SERVER_TIMEOUT_READ"`
 	TimeoutWrite time.Duration `env:"SERVER_TIMEOUT_WRITE"`
 	TimeoutIdle  time.Duration `env:"SERVER_TIMEOUT_IDLE"`
 }
 
-type gateway struct {
+type gatewayConfig struct {
 	Host    string `env:"GATEWAY_HOST"`
 	BaseURL string `env:"GATEWAY_BASEURL"`
 }
 
+type tokenConfig struct {
+	SecretKey string `env:"TOKEN_SECRET" validate:"required"`
+}
+
 func LoadConfig() *Config {
-	viper.SetConfigName("config")                          // กำหนดชื่อไฟล์ config (without extension)
-	viper.SetConfigType("yaml")                            // ระบุประเภทของไฟล์ config
-	viper.AddConfigPath(".")                               // ระบุตำแหน่งของไฟล์ config อยู่ที่ working directory
+	setDefault()
 	viper.AutomaticEnv()                                   // ให้อ่านค่าจาก env มา replace ในไฟล์ config
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // แปลง _ underscore ใน env เป็น . dot notation ใน viper
 
-	err := viper.ReadInConfig() // อ่านไฟล์ config
-	if err != nil {             // ถ้าอ่านไฟล์ config ไม่ได้ให้ข้ามไปเพราะให้เอาค่าจาก env มาแทนได้
+	viper.SetConfigName("config") // กำหนดชื่อไฟล์ config (without extension)
+	viper.SetConfigType("yaml")   // ระบุประเภทของไฟล์ config
+	viper.AddConfigPath(".")      // ระบุตำแหน่งของไฟล์ config อยู่ที่ working directory
+	// อ่านไฟล์ config
+	err := viper.ReadInConfig()
+	if err != nil { // ถ้าอ่านไฟล์ config ไม่ได้ให้ข้ามไปเพราะให้เอาค่าจาก env มาแทนได้
 		log.Println("please consider environment variables", err.Error())
 	}
 
+	config := setConfig()
+
+	// ตรวจสอบว่ากำหนดค่ามาครบหรือไม่
+	validate := validator.New()
+	err = validate.Struct(config)
+	if err != nil {
+		panic(errors.New("load config error: " + err.Error()))
+	}
+	return config
+}
+
+func setDefault() {
 	// กำหนด Default Value
 	viper.SetDefault("app.baseurl", "/api/v1")
 	viper.SetDefault("app.mode", "development")
@@ -83,8 +102,10 @@ func LoadConfig() *Config {
 	viper.SetDefault("server.timeout.idle", "60s")
 
 	viper.SetDefault("db.sslmode", "disable")
+}
 
-	config := &Config{
+func setConfig() *Config {
+	return &Config{
 		App: appConfig{
 			BaseUrl:      viper.GetString("app.baseurl"),
 			Mode:         viper.GetString("app.mode"),
@@ -101,27 +122,20 @@ func LoadConfig() *Config {
 			Database: viper.GetString("db.database"),
 			Sslmode:  viper.GetString("db.sslmode"),
 		},
-		Server: serverConf{
+		Server: serverConfig{
 			Port:         viper.GetUint("server.port"),
 			TimeoutRead:  parseDuration(viper.GetString("server.timeout.read")),
 			TimeoutWrite: parseDuration(viper.GetString("server.timteout.write")),
 			TimeoutIdle:  parseDuration(viper.GetString("server.timeout.idle")),
 		},
-		Gateway: gateway{
+		Gateway: gatewayConfig{
 			Host:    viper.GetString("gateway.host"),
 			BaseURL: viper.GetString("gateway.baseurl"),
 		},
+		Token: tokenConfig{
+			SecretKey: viper.GetString("token.secret"),
+		},
 	}
-
-	// ตรวจสอบว่ากำหนดค่ามาครบหรือไม่
-	validate := validator.New()
-
-	err = validate.Struct(config)
-	if err != nil {
-		panic(errors.New("load config error: " + err.Error()))
-	}
-
-	return config
 }
 
 func parseDuration(t string) time.Duration {

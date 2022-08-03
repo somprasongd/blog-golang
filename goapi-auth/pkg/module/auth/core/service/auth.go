@@ -4,26 +4,28 @@ import (
 	"errors"
 	"goapi/pkg/common"
 	"goapi/pkg/common/logger"
+	"goapi/pkg/config"
 	"goapi/pkg/module/auth/core/dto"
-	"goapi/pkg/module/auth/core/model"
 	"goapi/pkg/module/auth/core/ports"
+	"goapi/pkg/module/user/core/model"
 	"goapi/pkg/util"
 )
 
 var (
-	// ErrUserNotFoundById auth not found error when find with id
-	ErrUserNotFoundById     = common.NewNotFoundError("auth with given id not found")
-	ErrHashPassword         = common.NewUnexpectedError("hash password error")
 	ErrUserEmailDuplication = common.NewBadRequestError("email already exists")
-	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not macth")
+	ErrHashPassword         = common.NewUnexpectedError("error occurred while hashing password")
+	ErrLogin                = common.NewUnauthorizedError("the email or password are incorrect")
+	ErrGenerateToken        = common.NewUnexpectedError("error occurred while generating token")
+	ErrUserNotfound         = common.NewNotFoundError("user not found")
 )
 
 type authService struct {
-	repo ports.AuthRepository
+	config *config.Config
+	repo   ports.AuthRepository
 }
 
-func NewAuthService(repo ports.AuthRepository) ports.AuthService {
-	return &authService{repo}
+func NewAuthService(config *config.Config, repo ports.AuthRepository) ports.AuthService {
+	return &authService{config, repo}
 }
 
 func (s authService) Register(form dto.RegisterForm, reqId string) error {
@@ -61,48 +63,66 @@ func (s authService) Register(form dto.RegisterForm, reqId string) error {
 }
 
 func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse, error) {
-	// validate
+	// validate form
 	err := common.ValidateDto(form)
 	if err != nil {
 		return nil, common.NewInvalidError(err.Error())
 	}
-
+	// ค้นหาจาก email
 	user, err := s.repo.FindUserByEmail(form.Email)
 	if err != nil {
 		if errors.Is(err, common.ErrRecordNotFound) {
-			return nil, ErrUserNotFoundById
+			return nil, ErrLogin
 		}
 		logger.ErrorWithReqId(err.Error(), reqId)
 		return nil, common.ErrDbQuery
 	}
-
+	// ตรวจสอบรหัสผ่าน ตรงกันหรือไม่
 	match := util.CheckPasswordHash(form.Password, user.Password)
 
 	if !match {
-		return nil, ErrUserPasswordNotMatch
+		return nil, ErrLogin
 	}
+	// สร้าง jwt token
+	token, err := util.GenerateToken(user.ID.String(), user.Email, user.Role.String(), s.config.Token.SecretKey)
 
-	// TODO: Gen Refresh Token
-	// TODO: Gen Access Token
-
+	if err != nil {
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, ErrGenerateToken
+	}
+	// ตอบกลับไปพร้อมข้อมูล user
 	serialized := dto.AuthResponse{
 		User: dto.UserInfo{
 			ID:    user.ID.String(),
 			Email: user.Email,
 			Role:  user.Role.String(),
 		},
+		Token: token,
 	}
 	return &serialized, nil
 }
 
-func (s authService) Logout(form dto.LogoutForm, reqId string) error {
-	return nil
-}
+func (s authService) Profile(email string, reqId string) (*dto.UserInfo, error) {
+	// validate
+	if email == "" {
+		return nil, ErrUserNotfound
+	}
 
-func (s authService) Refresh(form dto.RefreshForm, reqId string) (*dto.AuthResponse, error) {
-	return nil, nil
-}
+	user, err := s.repo.FindUserByEmail(email)
 
-func (s authService) Profile(userId string, reqId string) (*dto.UserInfo, error) {
-	return nil, nil
+	if err != nil {
+		if errors.Is(err, common.ErrRecordNotFound) {
+			return nil, ErrUserNotfound
+		}
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, common.ErrDbQuery
+	}
+
+	serialized := dto.UserInfo{
+		ID:    user.ID.String(),
+		Email: user.Email,
+		Role:  user.Role.String(),
+	}
+
+	return &serialized, nil
 }

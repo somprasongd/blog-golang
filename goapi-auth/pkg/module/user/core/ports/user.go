@@ -2,8 +2,8 @@ package ports
 
 import (
 	"goapi/pkg/common"
-	"goapi/pkg/module/users/core/dto"
-	"goapi/pkg/module/users/core/model"
+	"goapi/pkg/module/user/core/dto"
+	"goapi/pkg/module/user/core/model"
 )
 
 // interface สำหรับ output port

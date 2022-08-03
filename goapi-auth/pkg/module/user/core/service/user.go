@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"goapi/pkg/common"
 	"goapi/pkg/common/logger"
-	"goapi/pkg/module/users/core/dto"
-	"goapi/pkg/module/users/core/mapper"
-	"goapi/pkg/module/users/core/ports"
+	"goapi/pkg/module/user/core/dto"
+	"goapi/pkg/module/user/core/mapper"
+	"goapi/pkg/module/user/core/ports"
 	"goapi/pkg/util"
 )
 

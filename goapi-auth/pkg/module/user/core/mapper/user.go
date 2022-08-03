@@ -1,14 +1,15 @@
 package mapper
 
 import (
-	"goapi/pkg/module/users/core/dto"
-	"goapi/pkg/module/users/core/model"
+	"goapi/pkg/module/user/core/dto"
+	"goapi/pkg/module/user/core/model"
 )
 
 func CreateUserFormToModel(dto dto.NewUserForm) *model.User {
 	return &model.User{
 		Email:    dto.Email,
 		Password: dto.Password,
+		Role:     model.UserRole(dto.Role),
 	}
 }
 

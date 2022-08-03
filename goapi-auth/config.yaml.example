@@ -18,3 +18,6 @@ db:
   password: 'S3cretp@ssw0rd'
   database: 'goapi'
   sslmode: 'disable'
+
+token:
+  secret: 'supers3cret'

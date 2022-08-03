@@ -1,11 +1,11 @@
-package users
+package user
 
 import (
 	"goapi/pkg/app"
-	"goapi/pkg/module/users/core/ports"
-	"goapi/pkg/module/users/core/service"
-	"goapi/pkg/module/users/handler"
-	"goapi/pkg/module/users/repository"
+	"goapi/pkg/module/user/core/ports"
+	"goapi/pkg/module/user/core/service"
+	"goapi/pkg/module/user/handler"
+	"goapi/pkg/module/user/repository"
 	"goapi/pkg/util"
 
 	"github.com/gofiber/fiber/v2"

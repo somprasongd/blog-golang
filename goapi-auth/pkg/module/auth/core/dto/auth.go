@@ -12,14 +12,6 @@ type LoginForm struct {
 	Password string `json:"password" validate:"required"`
 }
 
-type LogoutForm struct {
-	Token string `json:"refresh_token" validate:"required"`
-}
-
-type RefreshForm struct {
-	Token string `json:"refresh_token" validate:"required"`
-}
-
 type UserInfo struct {
 	ID    string `json:"id"`
 	Email string `json:"email"`
@@ -32,7 +24,14 @@ type TokenInfo struct {
 }
 
 type AuthResponse struct {
-	User         UserInfo  `json:"user"`
-	RefreshToken TokenInfo `json:"refresh"`
-	AccessToken  TokenInfo `json:"access"`
+	User  UserInfo `json:"user"`
+	Token string   `json:"token"`
+}
+
+type LogoutForm struct {
+	Token string `json:"refresh_token" validate:"required"`
+}
+
+type RefreshForm struct {
+	Token string `json:"refresh_token" validate:"required"`
 }

@@ -4,14 +4,14 @@ import (
 	"goapi/pkg/common"
 	"goapi/pkg/module/auth/core/dto"
 	"goapi/pkg/module/auth/core/ports"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type AuthHandler interface {
 	Register(common.HContext) error
 	Login(c common.HContext) error
 	Profile(c common.HContext) error
-	Refresh(c common.HContext) error
-	Logout(c common.HContext) error
 }
 
 type authHandler struct {
@@ -25,10 +25,10 @@ func NewAuthHandler(serv ports.AuthService) AuthHandler {
 // @Summary Register a new user
 // @Description Register a new user
 // @Tags Auth
-// @Accept  json
-// @Produce  json
+// @Accept json
+// @Produce json
 // @Param user body swagger.RegisterForm true "User Data"
-// @Failure 422 {object} swagdto.Error422{error=swagger.ErrCreateSampleData}
+// @Failure 422 {object} swagdto.Error422{error=swagger.ErrRegisterSampleData}
 // @Failure 500 {object} swagdto.Error500
 // @Success 201
 // @Router /auth/register [post]
@@ -54,10 +54,11 @@ func (h authHandler) Register(c common.HContext) error {
 // @Accept  json
 // @Produce  json
 // @Param user body swagger.LoginForm true "Login Data"
-// @Failure 422 {object} swagdto.Error422{error=swagger.ErrCreateSampleData}
+// @Failure 401 {object} swagdto.Error401
+// @Failure 422 {object} swagdto.Error422{error=swagger.ErrLoginSampleData}
 // @Failure 500 {object} swagdto.Error500
 // @Success 200 {object} swagdto.Response{data=swagger.AuthSampleData}
-// @Router /auth [post]
+// @Router /auth/login [post]
 func (h authHandler) Login(c common.HContext) error {
 	// แปลง JSON เป็น struct
 	form := new(dto.LoginForm)
@@ -74,70 +75,20 @@ func (h authHandler) Login(c common.HContext) error {
 	return common.ResponseOk(c, "auth", auth)
 }
 
-// @Summary Logout
-// @Description Logout
-// @Tags Auth
-// @Accept  json
-// @Produce  json
-// @Param user body swagger.LogoutForm true "Logout Data"
-// @Failure 422 {object} swagdto.Error422{error=swagger.ErrCreateSampleData}
-// @Failure 500 {object} swagdto.Error500
-// @Success 200
-// @Router /auth/logout [post]
-func (h authHandler) Logout(c common.HContext) error {
-	// แปลง JSON เป็น struct
-	form := new(dto.LogoutForm)
-	if err := c.BodyParser(form); err != nil {
-		return common.ResponseError(c, common.ErrBodyParser)
-	}
-	// ส่งต่อไปให้ service ทำงาน
-	err := h.serv.Logout(*form, c.RequestId())
-	if err != nil {
-		// error จะถูกจัดการมาจาก service แล้ว
-		return common.ResponseError(c, err)
-	}
-
-	return common.ResponseOk(c, "", nil)
-}
-
-// @Summary Refresh Access Token
-// @Description Refresh Access Token
-// @Tags Auth
-// @Accept  json
-// @Produce  json
-// @Param user body swagger.RefreshForm true "Logout Data"
-// @Failure 422 {object} swagdto.Error422{error=swagger.ErrCreateSampleData}
-// @Failure 500 {object} swagdto.Error500
-// @Success 200
-// @Router /auth/logout [post]
-func (h authHandler) Refresh(c common.HContext) error {
-	// แปลง JSON เป็น struct
-	form := new(dto.RefreshForm)
-	if err := c.BodyParser(form); err != nil {
-		return common.ResponseError(c, common.ErrBodyParser)
-	}
-	// ส่งต่อไปให้ service ทำงาน
-	auth, err := h.serv.Refresh(*form, c.RequestId())
-	if err != nil {
-		// error จะถูกจัดการมาจาก service แล้ว
-		return common.ResponseError(c, err)
-	}
-
-	return common.ResponseOk(c, "auth", auth)
-}
-
 // @Summary Get a user profile
 // @Description Get a specific user by id
 // @Produce json
 // @Tags Auth
+// @Param Authorization header string true "Bearer"
 // @Failure 401 {object} swagdto.Error401
 // @Failure 500 {object} swagdto.Error500
-// @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
+// @Success 200 {object} swagdto.Response{data=swagger.UserInfoSampleData}
 // @Router /auth/profile [get]
 func (h authHandler) Profile(c common.HContext) error {
-	id := c.Param("id")
+	u := c.Locals("user").(jwt.MapClaims)
+	email := u["email"].(string)
 
-	user, err := h.serv.Profile(id, c.RequestId())
+	user, err := h.serv.Profile(email, c.RequestId())
 
 	if err != nil {
 		return common.ResponseError(c, err)

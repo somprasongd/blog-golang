@@ -9,8 +9,8 @@ CREATE TABLE public.users (
 	email varchar(255) NOT NULL,
 	password varchar(255) NOT NULL,
 	role user_role NULL DEFAULT 'user'::user_role,
-	created_at timestamptz NULL,
-	updated_at timestamptz NULL,
+	created_at timestamptz NOT NULL default current_timestamp,
+	updated_at timestamptz NOT NULL default current_timestamp,
 	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX users_unique_email ON public.users (email);

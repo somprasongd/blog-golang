@@ -1,8 +1,9 @@
 package dto
 
 type NewUserForm struct {
-	Email    string `json:"email" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
+	Role     string `json:"role" validate:"omitempty,oneof='admin' 'user'"`
 }
 
 type UserId struct {

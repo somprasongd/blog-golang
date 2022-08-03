@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"goapi/pkg/common"
-	"goapi/pkg/module/users/core/model"
-	"goapi/pkg/module/users/core/ports"
+	"goapi/pkg/module/user/core/model"
+	"goapi/pkg/module/user/core/ports"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

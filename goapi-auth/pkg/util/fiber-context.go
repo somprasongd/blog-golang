@@ -16,6 +16,14 @@ func newFiberContext(c *fiber.Ctx) common.HContext {
 	}
 }
 
+func (c *fiberContext) Method() string {
+	return c.Ctx.Method()
+}
+
+func (c *fiberContext) Path() string {
+	return c.Ctx.Path()
+}
+
 func (c *fiberContext) BodyParser(v interface{}) error {
 	return c.Ctx.BodyParser(v)
 }
@@ -38,7 +46,7 @@ func (c *fiberContext) Param(key string) string {
 }
 
 func (c *fiberContext) Header(key string) string {
-	return c.Ctx.GetRespHeader(key)
+	return c.Ctx.Get(key)
 }
 
 func (c *fiberContext) Authorization() string {
@@ -47,6 +55,14 @@ func (c *fiberContext) Authorization() string {
 
 func (c *fiberContext) RequestId() string {
 	return c.GetRespHeader("X-Request-ID")
+}
+
+func (c *fiberContext) Locals(key string, value ...interface{}) interface{} {
+	return c.Ctx.Locals(key, value...)
+}
+
+func (c *fiberContext) Next() error {
+	return c.Ctx.Next()
 }
 
 func (c *fiberContext) SendStatus(code int) error {

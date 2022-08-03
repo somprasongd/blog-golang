@@ -16,6 +16,190 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Login Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/swagger.LoginForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/swagger.AuthSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error401"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrLoginSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/profile": {
+            "get": {
+                "description": "Get a specific user by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get a user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/swagger.UserInfoSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error401"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "User Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/swagger.RegisterForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrRegisterSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "You can filter all existing users by listing them.",
@@ -229,7 +413,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     },
                     "400": {
                         "description": "Bad Request",
@@ -354,6 +538,22 @@ const docTemplate = `{
                 }
             }
         },
+        "swagdto.Error401": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/swagdto.ErrorData401"
+                },
+                "requestId": {
+                    "type": "string",
+                    "example": "3b6272b9-1ef1-45e0"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 401
+                }
+            }
+        },
         "swagdto.Error404": {
             "type": "object",
             "properties": {
@@ -412,6 +612,19 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Bad Request"
+                }
+            }
+        },
+        "swagdto.ErrorData401": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "401"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Unauthorized"
                 }
             }
         },
@@ -533,6 +746,26 @@ const docTemplate = `{
                 }
             }
         },
+        "swagger.AuthResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2NTk0MzI5NTYsInN1YiI6Ijk2YWUzNWM0LTE0Y2ItNDAzMy1iYTMwLTVkYTBmNjA2NjFiNCJ9.spR28QwRVbmOjJPu6iwRhA19jOpxYtgpRRsiaNWGTYk"
+                },
+                "user": {
+                    "$ref": "#/definitions/swagger.UserInfo"
+                }
+            }
+        },
+        "swagger.AuthSampleData": {
+            "type": "object",
+            "properties": {
+                "auth": {
+                    "$ref": "#/definitions/swagger.AuthResponse"
+                }
+            }
+        },
         "swagger.CreateUserFrom": {
             "type": "object",
             "properties": {
@@ -559,6 +792,44 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/swagger.ErrorDetailCreate"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "invalid data see details"
+                }
+            }
+        },
+        "swagger.ErrLoginSampleData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "422"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.ErrorDetailLogin"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "invalid data see details"
+                }
+            }
+        },
+        "swagger.ErrRegisterSampleData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "422"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.ErrorDetailRegister"
                     }
                 },
                 "message": {
@@ -599,6 +870,32 @@ const docTemplate = `{
                 }
             }
         },
+        "swagger.ErrorDetailLogin": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "password field is required"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "password"
+                }
+            }
+        },
+        "swagger.ErrorDetailRegister": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "email field is required"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "email"
+                }
+            }
+        },
         "swagger.ErrorDetailUpdate": {
             "type": "object",
             "properties": {
@@ -609,6 +906,36 @@ const docTemplate = `{
                 "target": {
                     "type": "string",
                     "example": "password_old"
+                }
+            }
+        },
+        "swagger.LoginForm": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Required: true",
+                    "type": "string",
+                    "example": "user@mail.com"
+                },
+                "password": {
+                    "description": "Required: true",
+                    "type": "string",
+                    "example": "password1234"
+                }
+            }
+        },
+        "swagger.RegisterForm": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Required: true",
+                    "type": "string",
+                    "example": "user@mail.com"
+                },
+                "password": {
+                    "description": "Required: true",
+                    "type": "string",
+                    "example": "password1234"
                 }
             }
         },
@@ -624,6 +951,31 @@ const docTemplate = `{
                     "description": "Required: true",
                     "type": "string",
                     "example": "password1234"
+                }
+            }
+        },
+        "swagger.UserInfo": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "user@mail.com"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "bfbc2a69-9825-4a0e-a8d6-ffb985dc719c"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "user"
+                }
+            }
+        },
+        "swagger.UserInfoSampleData": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/swagger.UserInfo"
                 }
             }
         },
