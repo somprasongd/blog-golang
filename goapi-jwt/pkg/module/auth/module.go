@@ -5,6 +5,7 @@ import (
 	"goapi/pkg/module/auth/core/ports"
 	"goapi/pkg/module/auth/core/service"
 	"goapi/pkg/module/auth/handler"
+	"goapi/pkg/module/auth/middleware"
 	"goapi/pkg/module/auth/repository"
 	"goapi/pkg/util"
 
@@ -13,6 +14,7 @@ import (
 
 type RouteConfig struct {
 	BaseURL     string
+	TokenSecret string
 	Router      *fiber.App
 	AuthService ports.AuthService
 }
@@ -20,10 +22,11 @@ type RouteConfig struct {
 func Init(ctx *app.Context) {
 	// สร้าง dependencies ทั้งหมด
 	repo := repository.NewAuthRepositoryDB(ctx.DB.DB)
-	svc := service.NewAuthService(repo)
+	svc := service.NewAuthService(ctx.Config, repo)
 
 	cfg := RouteConfig{
 		BaseURL:     ctx.Config.App.BaseUrl,
+		TokenSecret: ctx.Config.Token.SecretKey,
 		Router:      ctx.Router,
 		AuthService: svc,
 	}
@@ -38,7 +41,7 @@ func SetupRoutes(cfg RouteConfig) {
 
 	auth.Post("/register", util.WrapFiberHandler(h.Register))
 	auth.Post("/login", util.WrapFiberHandler(h.Login))
-	auth.Post("/logout", util.WrapFiberHandler(h.Logout))
-	auth.Post("/refresh", util.WrapFiberHandler(h.Refresh))
-	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
+
+	authentication := util.WrapFiberHandler(middleware.Authentication(cfg.TokenSecret))
+	auth.Get("/profile", authentication, util.WrapFiberHandler(h.Profile))
 }

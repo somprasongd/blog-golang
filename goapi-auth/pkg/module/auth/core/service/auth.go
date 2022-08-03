@@ -5,9 +5,8 @@ import (
 	"goapi/pkg/common"
 	"goapi/pkg/common/logger"
 	"goapi/pkg/module/auth/core/dto"
+	"goapi/pkg/module/auth/core/model"
 	"goapi/pkg/module/auth/core/ports"
-	"goapi/pkg/module/users/core/model"
-	userPorts "goapi/pkg/module/users/core/ports"
 	"goapi/pkg/util"
 )
 
@@ -15,15 +14,15 @@ var (
 	// ErrUserNotFoundById auth not found error when find with id
 	ErrUserNotFoundById     = common.NewNotFoundError("auth with given id not found")
 	ErrHashPassword         = common.NewUnexpectedError("hash password error")
-	ErrUserEmailDuplication = common.NewBadRequestError("duplicate email")
+	ErrUserEmailDuplication = common.NewBadRequestError("email already exists")
 	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not macth")
 )
 
 type authService struct {
-	repo userPorts.UserRepository
+	repo ports.AuthRepository
 }
 
-func NewUserService(repo userPorts.UserRepository) ports.AuthService {
+func NewAuthService(repo ports.AuthRepository) ports.AuthService {
 	return &authService{repo}
 }
 
@@ -33,7 +32,7 @@ func (s authService) Register(form dto.RegisterForm, reqId string) error {
 		return common.NewInvalidError(err.Error())
 	}
 
-	u, err := s.repo.FindByEmail(form.Email)
+	u, err := s.repo.FindUserByEmail(form.Email)
 
 	if err != nil && !errors.Is(err, common.ErrRecordNotFound) {
 		logger.ErrorWithReqId(err.Error(), reqId)
@@ -52,7 +51,7 @@ func (s authService) Register(form dto.RegisterForm, reqId string) error {
 	}
 	auth.Password = hashPwd
 
-	err = s.repo.Create(&auth)
+	err = s.repo.CreateUser(&auth)
 	if err != nil {
 		logger.ErrorWithReqId(err.Error(), reqId)
 		return common.ErrDbInsert
@@ -68,7 +67,7 @@ func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse,
 		return nil, common.NewInvalidError(err.Error())
 	}
 
-	user, err := s.repo.FindByEmail(form.Email)
+	user, err := s.repo.FindUserByEmail(form.Email)
 	if err != nil {
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrUserNotFoundById
