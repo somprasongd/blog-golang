@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"fmt"
 	"goapi/pkg/common"
+	"goapi/pkg/common/logger"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -26,7 +26,7 @@ func Authorize(enforcer *casbin.Enforcer) common.HandleFunc {
 		ok, err := enforcer.Enforce(role, c.Path(), c.Method())
 
 		if err != nil {
-			fmt.Println(err)
+			logger.ErrorWithReqId(err.Error(), c.RequestId())
 			return common.ResponseError(c, ErrEnforce)
 		}
 

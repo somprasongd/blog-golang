@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"goapi/pkg/common"
 	"goapi/pkg/common/logger"
 	"goapi/pkg/util"
@@ -73,7 +72,7 @@ func AuthenticationCasbin(secretKey string, enforcer *casbin.Enforcer) common.Ha
 
 		public, err := enforcer.Enforce(enforceContext, c.Path(), c.Method())
 		if err != nil {
-			fmt.Println(err)
+			logger.ErrorWithReqId(err.Error(), c.RequestId())
 			return common.ResponseError(c, ErrEnforce)
 		}
 
