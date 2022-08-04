@@ -27,9 +27,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "password_old": "admin2",
-  "password_new": "1234"
+  "password": "1234"
 }
+
 ### delete by id
 DELETE {{host}}/api/v1/users/{{id}}
 Authorization: Bearer {{token}}

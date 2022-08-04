@@ -54,3 +54,14 @@ type ErrLoginSampleData struct {
 	Message string             `json:"message" example:"invalid data see details"`
 	Details []ErrorDetailLogin `json:"details"`
 }
+
+type ErrorDetailUpdate struct {
+	Target  string `json:"target" example:"password_old"`
+	Message string `json:"message" example:"password_old field is required"`
+}
+
+type ErrUpdateSampleData struct {
+	Code    string              `json:"code" example:"422"`
+	Message string              `json:"message" example:"invalid data see details"`
+	Details []ErrorDetailUpdate `json:"details"`
+}

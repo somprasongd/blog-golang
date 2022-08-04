@@ -11,8 +11,7 @@ type UserId struct {
 }
 
 type UpdateUserPasswordForm struct {
-	PasswordOld string `json:"password_old"`
-	PasswordNew string `json:"password_new"`
+	Password string `json:"password"`
 }
 
 type UserResponse struct {

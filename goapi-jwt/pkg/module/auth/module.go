@@ -43,5 +43,7 @@ func SetupRoutes(cfg RouteConfig) {
 
 	// authentication := util.WrapFiberHandler(middleware.Authentication(cfg.TokenSecret))
 	// auth.Get("/profile", authentication, util.WrapFiberHandler(h.Profile))
+	// auth.Patch("/profile", authentication, util.WrapFiberHandler(h.UpdateProfile))
 	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
+	auth.Patch("/profile", util.WrapFiberHandler(h.UpdateProfile))
 }

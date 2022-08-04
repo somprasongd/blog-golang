@@ -13,6 +13,7 @@ import (
 
 type RouteConfig struct {
 	BaseURL     string
+	TokenSecret string
 	Router      *fiber.App
 	AuthService ports.AuthService
 }
@@ -24,6 +25,7 @@ func Init(ctx *app.Context) {
 
 	cfg := RouteConfig{
 		BaseURL:     ctx.Config.App.BaseUrl,
+		TokenSecret: ctx.Config.Token.SecretKey,
 		Router:      ctx.Router,
 		AuthService: svc,
 	}
@@ -38,5 +40,7 @@ func SetupRoutes(cfg RouteConfig) {
 
 	auth.Post("/register", util.WrapFiberHandler(h.Register))
 	auth.Post("/login", util.WrapFiberHandler(h.Login))
+
 	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
+	auth.Patch("/profile", util.WrapFiberHandler(h.UpdateProfile))
 }

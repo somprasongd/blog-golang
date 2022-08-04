@@ -25,7 +25,7 @@ type AuthResponse struct {
 	Token string   `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2NTk0MzI5NTYsInN1YiI6Ijk2YWUzNWM0LTE0Y2ItNDAzMy1iYTMwLTVkYTBmNjA2NjFiNCJ9.spR28QwRVbmOjJPu6iwRhA19jOpxYtgpRRsiaNWGTYk"`
 }
 
-type UserInfoSampleData struct {
+type UserSampleData struct {
 	Data UserInfo `json:"user"`
 }
 
@@ -53,4 +53,15 @@ type ErrLoginSampleData struct {
 	Code    string             `json:"code" example:"422"`
 	Message string             `json:"message" example:"invalid data see details"`
 	Details []ErrorDetailLogin `json:"details"`
+}
+
+type ErrorDetailUpdate struct {
+	Target  string `json:"target" example:"password_old"`
+	Message string `json:"message" example:"password_old field is required"`
+}
+
+type ErrUpdateSampleData struct {
+	Code    string              `json:"code" example:"422"`
+	Message string              `json:"message" example:"invalid data see details"`
+	Details []ErrorDetailUpdate `json:"details"`
 }

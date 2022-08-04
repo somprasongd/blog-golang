@@ -28,6 +28,11 @@ type AuthResponse struct {
 	Token string   `json:"token"`
 }
 
+type UpdateProfileForm struct {
+	PasswordOld string `json:"password_old"`
+	PasswordNew string `json:"password_new"`
+}
+
 type LogoutForm struct {
 	Token string `json:"refresh_token" validate:"required"`
 }

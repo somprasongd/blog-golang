@@ -20,6 +20,7 @@ var (
 	ErrNoToken              = common.NewUnauthorizedError("the token is required")
 	ErrInvalidToken         = common.NewUnauthorizedError("the token is invalid")
 	ErrUserNotfound         = common.NewUnauthorizedError("user not found")
+	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not macth")
 )
 
 type authService struct {
@@ -87,7 +88,7 @@ func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse,
 		return nil, ErrLogin
 	}
 	// สร้าง jwt token
-	token, err := util.GenerateToken(user.ID.String(), user.Email, s.config.Token.SecretKey)
+	token, err := util.GenerateToken(user.ID.String(), user.Email, user.Role.String(), s.config.Token.SecretKey)
 
 	if err != nil {
 		logger.ErrorWithReqId(err.Error(), reqId)
@@ -119,6 +120,52 @@ func (s authService) Profile(email string, reqId string) (*dto.UserInfo, error) 
 		}
 		logger.ErrorWithReqId(err.Error(), reqId)
 		return nil, common.ErrDbQuery
+	}
+
+	serialized := dto.UserInfo{
+		ID:    user.ID.String(),
+		Email: user.Email,
+		Role:  user.Role.String(),
+	}
+
+	return &serialized, nil
+}
+
+func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, reqId string) (*dto.UserInfo, error) {
+	// validate
+	err := common.ValidateDto(form)
+	if err != nil {
+		return nil, common.NewInvalidError(err.Error())
+	}
+
+	user, err := s.repo.FindUserByEmail(email)
+	if err != nil {
+		if errors.Is(err, common.ErrRecordNotFound) {
+			return nil, ErrUserNotfound
+		}
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, common.ErrDbQuery
+	}
+
+	match := util.CheckPasswordHash(form.PasswordOld, user.Password)
+
+	if !match {
+		return nil, ErrUserPasswordNotMatch
+	}
+
+	hashPwd, err := util.HashPassword(form.PasswordNew)
+
+	if err != nil {
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, ErrHashPassword
+	}
+
+	user.Password = hashPwd
+
+	err = s.repo.SaveProfile(user)
+	if err != nil {
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, common.ErrDbUpdate
 	}
 
 	serialized := dto.UserInfo{

@@ -6,8 +6,8 @@ import (
 	"goapi/pkg/common/logger"
 	"goapi/pkg/config"
 	"goapi/pkg/module/auth/core/dto"
+	"goapi/pkg/module/auth/core/model"
 	"goapi/pkg/module/auth/core/ports"
-	"goapi/pkg/module/user/core/model"
 	"goapi/pkg/util"
 )
 
@@ -16,7 +16,11 @@ var (
 	ErrHashPassword         = common.NewUnexpectedError("error occurred while hashing password")
 	ErrLogin                = common.NewUnauthorizedError("the email or password are incorrect")
 	ErrGenerateToken        = common.NewUnexpectedError("error occurred while generating token")
-	ErrUserNotfound         = common.NewNotFoundError("user not found")
+	ErrValidateToken        = common.NewUnexpectedError("error occurred while validating token")
+	ErrNoToken              = common.NewUnauthorizedError("the token is required")
+	ErrInvalidToken         = common.NewUnauthorizedError("the token is invalid")
+	ErrUserNotfound         = common.NewUnauthorizedError("user not found")
+	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not macth")
 )
 
 type authService struct {
@@ -116,6 +120,52 @@ func (s authService) Profile(email string, reqId string) (*dto.UserInfo, error) 
 		}
 		logger.ErrorWithReqId(err.Error(), reqId)
 		return nil, common.ErrDbQuery
+	}
+
+	serialized := dto.UserInfo{
+		ID:    user.ID.String(),
+		Email: user.Email,
+		Role:  user.Role.String(),
+	}
+
+	return &serialized, nil
+}
+
+func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, reqId string) (*dto.UserInfo, error) {
+	// validate
+	err := common.ValidateDto(form)
+	if err != nil {
+		return nil, common.NewInvalidError(err.Error())
+	}
+
+	user, err := s.repo.FindUserByEmail(email)
+	if err != nil {
+		if errors.Is(err, common.ErrRecordNotFound) {
+			return nil, ErrUserNotfound
+		}
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, common.ErrDbQuery
+	}
+
+	match := util.CheckPasswordHash(form.PasswordOld, user.Password)
+
+	if !match {
+		return nil, ErrUserPasswordNotMatch
+	}
+
+	hashPwd, err := util.HashPassword(form.PasswordNew)
+
+	if err != nil {
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, ErrHashPassword
+	}
+
+	user.Password = hashPwd
+
+	err = s.repo.SaveProfile(user)
+	if err != nil {
+		logger.ErrorWithReqId(err.Error(), reqId)
+		return nil, common.ErrDbUpdate
 	}
 
 	serialized := dto.UserInfo{

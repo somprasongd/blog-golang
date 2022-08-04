@@ -16,7 +16,6 @@ var (
 	ErrUserNotFoundById     = common.NewNotFoundError("user with given id not found")
 	ErrHashPassword         = common.NewUnexpectedError("hash password error")
 	ErrUserEmailDuplication = common.NewBadRequestError("duplicate email")
-	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not macth")
 )
 
 type userService struct {
@@ -114,13 +113,7 @@ func (s userService) UpdatePassword(id string, form dto.UpdateUserPasswordForm, 
 		return nil, common.ErrDbQuery
 	}
 
-	match := util.CheckPasswordHash(form.PasswordOld, user.Password)
-
-	if !match {
-		return nil, ErrUserPasswordNotMatch
-	}
-
-	hashPwd, err := util.HashPassword(form.PasswordNew)
+	hashPwd, err := util.HashPassword(form.Password)
 
 	if err != nil {
 		logger.ErrorWithReqId(err.Error(), reqId)

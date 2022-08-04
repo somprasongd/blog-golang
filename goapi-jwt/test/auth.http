@@ -1,6 +1,6 @@
 @host=http://localhost:8080
 
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJpYXQiOjE2NTk0OTc5MDEsInN1YiI6IjViNDM3Y2NjLWNkZjUtNDZiZS1hOWNhLWU3NmY0NWY0NTEzYSJ9.tnyWPVzPUK-HhEmeI4p0BFNLy-YZUKoZB-OYxSts9iQ
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJzdWIiOiJmODYxOTM2Yy0wNjJmLTRlNDktODJhOC0wOGYzOWFiZWRkYTkiLCJpYXQiOjE2NTk2MDQ5NDN9.xLmFazSsF8hJMqfGXGePr6VzVDY_ZvuyNe7T-jpRcIk
 
 
 ### register
@@ -22,5 +22,15 @@ Content-Type: application/json
 }
 
 ### profile
-GET {{host}}/api/v1/auth/profile/123?q=1
+GET {{host}}/api/v1/auth/profile
 Authorization: Bearer {{token}}
+
+### update profile
+PATCH  {{host}}/api/v1/auth/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password_old": "1234",
+  "password_new": "user"
+}
