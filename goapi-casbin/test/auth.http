@@ -1,6 +1,6 @@
 @host=http://localhost:8080
 
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJzdWIiOiJmODYxOTM2Yy0wNjJmLTRlNDktODJhOC0wOGYzOWFiZWRkYTkiLCJpYXQiOjE2NTk2MDQ5NDN9.xLmFazSsF8hJMqfGXGePr6VzVDY_ZvuyNe7T-jpRcIk
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsInN1YiI6ImY4NjE5MzZjLTA2MmYtNGU0OS04MmE4LTA4ZjM5YWJlZGRhOSIsImlhdCI6MTY1OTUyMDU5MH0.NHT8oZXrrQOVXUCepiNCfajRKE3brkqamT3eUk2MawA
 
 
 ### register
@@ -17,8 +17,8 @@ POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@mail.com",
-  "password": "user"
+  "email": "admin@mail.com",
+  "password": "admin"
 }
 
 ### profile

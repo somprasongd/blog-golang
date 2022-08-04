@@ -41,9 +41,6 @@ func SetupRoutes(cfg RouteConfig) {
 	auth.Post("/register", util.WrapFiberHandler(h.Register))
 	auth.Post("/login", util.WrapFiberHandler(h.Login))
 
-	// authentication := util.WrapFiberHandler(middleware.Authentication(cfg.TokenSecret))
-	// auth.Get("/profile", authentication, util.WrapFiberHandler(h.Profile))
-	// auth.Patch("/profile", authentication, util.WrapFiberHandler(h.UpdateProfile))
 	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
 	auth.Patch("/profile", util.WrapFiberHandler(h.UpdateProfile))
 }
