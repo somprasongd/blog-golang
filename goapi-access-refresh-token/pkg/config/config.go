@@ -13,6 +13,7 @@ import (
 type Config struct {
 	App     appConfig     `validate:"dive"`
 	Db      dbConfig      `validate:"dive"`
+	Redis   redisConfig   `validate:"dive"`
 	Server  serverConfig  `validate:"dive"`
 	Gateway gatewayConfig `validate:"dive"`
 	Token   tokenConfig   `validate:"dive"`
@@ -46,6 +47,13 @@ type dbConfig struct {
 	Password string `env:"DB_PASSWORD"`
 	Database string `env:"DB_DATABASE"`
 	Sslmode  string `env:"DB_SSLMODE"`
+}
+
+type redisConfig struct {
+	Host     string `env:"REDIS_HOST"`
+	Port     uint   `env:"REDIS_PORT"`
+	Password string `env:"REDIS_PASSWORD"`
+	Database int    `env:"REDIS_DATABASE"`
 }
 
 type serverConfig struct {
@@ -104,6 +112,9 @@ func setDefault() {
 	viper.SetDefault("server.timeout.idle", "60s")
 
 	viper.SetDefault("db.sslmode", "disable")
+
+	viper.SetDefault("redis.password", "")
+	viper.SetDefault("redis.database", 0)
 }
 
 func setConfig() *Config {
@@ -123,6 +134,12 @@ func setConfig() *Config {
 			Password: viper.GetString("db.password"),
 			Database: viper.GetString("db.database"),
 			Sslmode:  viper.GetString("db.sslmode"),
+		},
+		Redis: redisConfig{
+			Host:     viper.GetString("redis.host"),
+			Port:     viper.GetUint("redis.port"),
+			Password: viper.GetString("redis.password"),
+			Database: viper.GetInt("redis.database"),
 		},
 		Server: serverConfig{
 			Port:         viper.GetUint("server.port"),

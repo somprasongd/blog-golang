@@ -41,9 +41,11 @@ func (u *UserInfo) ToPayloadMap() map[string]interface{} {
 }
 
 type AuthResponse struct {
-	User                 UserInfo  `json:"user"`
-	AccessToken          string    `json:"access_token"`
-	AccessTokenExpiresAt time.Time `json:"access_token_expires"`
+	User                  *UserInfo `json:"user,omitempty"`
+	AccessToken           string    `json:"access_token"`
+	AccessTokenExpiresAt  time.Time `json:"access_token_expires"`
+	RefreshToken          string    `json:"refresh_token"`
+	RefreshTokenExpiresAt time.Time `json:"refresh_token_expires"`
 }
 
 type UpdateProfileForm struct {

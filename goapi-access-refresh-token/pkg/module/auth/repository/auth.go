@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"goapi/pkg/common"
-	"goapi/pkg/module/auth/core/model"
 	"goapi/pkg/module/auth/core/ports"
+	"goapi/pkg/module/user/core/model"
 
 	"gorm.io/gorm"
 )

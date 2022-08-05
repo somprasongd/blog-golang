@@ -7,6 +7,7 @@ import (
 	log "goapi/pkg/common/logger"
 	"goapi/pkg/config"
 	"goapi/pkg/util"
+	"goapi/pkg/util/cache"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +25,7 @@ type Context struct {
 	Config *config.Config
 	Router *fiber.App
 	DB     *database.GormDB
+	Cache  *cache.RedisClient
 }
 
 type app struct {
@@ -52,6 +54,12 @@ func (a *app) InitDS() {
 		panic(err)
 	}
 	a.DB = gorm
+
+	redis, err := database.NewRedisClient(a.Config)
+	if err != nil {
+		panic(err)
+	}
+	a.Cache = redis
 }
 
 func (a *app) Close() {
@@ -59,6 +67,11 @@ func (a *app) Close() {
 	if a.DB != nil {
 		log.Info("Closing database")
 		a.DB.CloseDB()
+	}
+	// close redis
+	if a.Cache != nil {
+		log.Info("Closing redis")
+		a.Cache.Close()
 	}
 	// remove liveness file
 	log.Info("Removing liveness file")

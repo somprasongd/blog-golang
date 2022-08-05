@@ -19,6 +19,12 @@ db:
   database: 'goapi'
   sslmode: 'disable'
 
+redis:
+  host: 'localhost'
+  port: 6379
+  password: ''
+  database: 0
+
 token:
   access:
     secret: 'access_supers3cret'
