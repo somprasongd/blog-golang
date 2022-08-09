@@ -28,15 +28,17 @@ func main() {
 
 func logMiddleware(c *fiber.Ctx) error {
 	start := time.Now()
+
 	fileds := map[string]interface{}{}
 	fileds["requestid"] = c.GetRespHeaders()["X-Request-Id"]
+
 	log := logger.NewWithFields(fileds)
 
 	c.Locals("log", log)
 
 	c.Next()
 
-	// "[ip]:port status - method path (time)"
+	// "[ip]:port status - method path (duration)"
 	log.Info(fmt.Sprintf("[%v]:%v %v - %v %v (%v)", c.IP(), c.Port(), c.Response().StatusCode(), c.Method(), c.Path(), time.Since(start)))
 	return nil
 }

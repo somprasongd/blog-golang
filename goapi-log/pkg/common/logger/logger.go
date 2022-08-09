@@ -22,26 +22,30 @@ type Logger interface {
 	PanicWithFields(msg string, fileds map[string]interface{})
 }
 
-var log *zap.Logger
+var zlog *zap.Logger
 var Default Logger
 
 func init() {
 	var err error
+
 	mode := os.Getenv("APP_MODE")
+	mode = "production"
 	var config zap.Config
 	if mode == "production" {
 		config = zap.NewProductionConfig()
 	} else {
 		config = zap.NewDevelopmentConfig()
 	}
+
 	config.EncoderConfig = ecszap.ECSCompatibleEncoderConfig(config.EncoderConfig)
-	log, err = config.Build(ecszap.WrapCoreOption(), zap.AddCallerSkip(1))
+
+	zlog, err = config.Build(ecszap.WrapCoreOption(), zap.AddCallerSkip(1))
 
 	if err != nil {
 		panic(err)
 	}
 
-	Default = NewZapLogger(log)
+	Default = newZapLogger(zlog)
 }
 
 func NewWithFields(fileds map[string]interface{}) Logger {
@@ -50,6 +54,6 @@ func NewWithFields(fileds map[string]interface{}) Logger {
 		opts = append(opts, zap.Any(k, v))
 	}
 
-	nlog := log.With(opts...)
-	return NewZapLogger(nlog)
+	nlog := zlog.With(opts...)
+	return newZapLogger(nlog)
 }
