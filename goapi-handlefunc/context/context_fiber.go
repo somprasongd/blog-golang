@@ -36,7 +36,7 @@ func (c *FiberContext) Param(key string) string {
 }
 
 func (c *FiberContext) Header(key string) string {
-	return c.Ctx.GetRespHeader(key)
+	return c.Ctx.Get(key)
 }
 
 func (c *FiberContext) RequestId() string {
