@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"goapi/pkg/common/logger"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +16,7 @@ func main() {
 	app.Use(logMiddleware)
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		log := c.Locals("log").(logger.Logger)
+		log := c.Locals("log").(logger.Interface)
 		log.Info("log in handler")
 		return c.SendString("Hello, World!")
 	})
@@ -29,19 +29,36 @@ func main() {
 func logMiddleware(c *fiber.Ctx) error {
 	start := time.Now()
 
-	fileds := map[string]interface{}{}
-	fileds["ip"] = c.IP()
-	fileds["port"] = c.Port()
-	fileds["requestid"] = c.GetRespHeaders()["X-Request-Id"]
+	appName := os.Getenv("APP_NAME")
 
-	log := logger.NewWithFields(fileds)
+	if len(appName) == 0 {
+		appName = "goapi"
+	}
+
+	fileds := map[string]interface{}{
+		"app":       appName,
+		"domain":    c.Hostname(),
+		"requestId": c.GetRespHeader("X-Request-ID"),
+		"userAgent": c.Get("User-Agent"),
+		"ip":        c.IP(),
+		"method":    c.Method(),
+		"traceId":   c.Get("X-B3-Traceid"),
+		"spanId":    c.Get("X-B3-Spanid"),
+		"uri":       c.Path(),
+	}
+
+	log := logger.New(logger.ToFields(fileds)...)
 
 	c.Locals("log", log)
 
-	c.Next()
+	err := c.Next()
 
-	// "status - method path (duration)"
-	msg := fmt.Sprintf("%v - %v %v (%v)", c.Response().StatusCode(), c.Method(), c.Path(), time.Since(start))
-	log.Info(msg)
-	return nil
+	fileds["status"] = c.Response().StatusCode()
+	fileds["latency"] = time.Since(start)
+
+	logger.Default.Info("", logger.ToFields(fileds)...)
+
+	// logger.New(logger.ToFields(fileds)...).Info("")
+
+	return err
 }
